@@ -6,7 +6,7 @@ Read in Python: `pandas.read_csv("data/facilities_clean.csv.gz")` (pandas auto-d
 
 | File | Rows | Cols | Notes |
 |---|---|---|---|
-| `facilities_clean.csv.gz` | 10,088 | 51 | The official challenge dataset (healthcare facilities), cleaned |
+| `facilities_clean.csv.gz` | 10,088 | 52 | The official challenge dataset (healthcare facilities), cleaned — incl. restored `custom_logo_presence` |
 | `pincode_clean.csv.gz` | 165,627 | 11 | India Post PIN-code directory (geo bridge) |
 | `nfhs5_district_health_clean.csv.gz` | 706 | 109 | NFHS-5 district health indicators (enrichment) |
 

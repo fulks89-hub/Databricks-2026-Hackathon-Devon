@@ -5,7 +5,7 @@
 
 ## Overall confidence: **90 / 100 (High)**
 
-The large majority of changes are **deterministic and lossless-by-design** (sentinel→NULL, safe `try_cast`, trim, set-dedupe) and carry very high confidence. The score is held below ~95 by three judgment-based steps: **coordinate repair** (approximate for 35 rows), the **corruption heuristic flag**, and **one dropped column** (see Known Limitations). **Row counts were fully preserved** — nothing was deleted:
+The large majority of changes are **deterministic and lossless-by-design** (sentinel→NULL, safe `try_cast`, trim, set-dedupe) and carry very high confidence. The score is held below ~95 by two judgment-based steps: **coordinate repair** (approximate for 35 rows) and the **corruption heuristic flag**. **Row counts were fully preserved** — nothing was deleted:
 
 | Table | Rows in | Rows out | Match |
 |---|---|---|---|
@@ -45,6 +45,6 @@ The large majority of changes are **deterministic and lossless-by-design** (sent
 - **No imputation** of missing numerics.
 
 ## Known limitations
-- ⚠️ **`custom_logo_presence` was dropped** from `facilities_clean` (it was ~95% populated but was not in the column list handed to the cleaning agent, so it was excluded). This was **not intentional** — say the word and I'll regenerate facilities with it restored.
+- ✅ **`custom_logo_presence` is retained** (cleaned like other text fields). Only `coordinates` (redundant with lat/long) and `countries` (~0.3% filled) were intentionally dropped — so `facilities_clean` has 52 columns (49 original + specialties_count, coord_source, data_quality_flag).
 - Coordinate backfill for the 35 repaired rows is **area-level, not exact** — fine for mapping/aggregation, not for precise routing. Always check `coord_source`.
 - The `data_quality_flag` is a **screening signal**, not a verified label.
