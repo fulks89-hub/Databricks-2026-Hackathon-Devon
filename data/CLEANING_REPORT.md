@@ -5,11 +5,11 @@
 
 ## Overall confidence: **90 / 100 (High)**
 
-The large majority of changes are **deterministic and lossless-by-design** (sentinel→NULL, safe `try_cast`, trim, set-dedupe) and carry very high confidence. The score is held below ~95 by two judgment-based steps: **coordinate repair** (approximate for 35 rows) and the **corruption heuristic flag**. **Row counts were fully preserved** — nothing was deleted:
+The large majority of changes are **deterministic and lossless-by-design** (sentinel→NULL, safe `try_cast`, trim, set-dedupe) and carry very high confidence. The score is held below ~95 by two judgment-based steps: **coordinate repair** (approximate for 35 rows) and the **corruption heuristic flag**. Row counts are preserved **except 11 byte-identical duplicate facility rows** removed in a follow-up `unique_id` audit (see *unique_id audit* below):
 
 | Table | Rows in | Rows out | Match |
 |---|---|---|---|
-| facilities | 10,088 | 10,088 | ✅ |
+| facilities | 10,088 | **10,077** | 11 exact dup rows removed |
 | pincode | 165,627 | 165,627 | ✅ |
 | nfhs5_district_health | 706 | 706 | ✅ |
 
@@ -25,6 +25,12 @@ The large majority of changes are **deterministic and lossless-by-design** (sent
 | Coordinate repair (validate India bbox; backfill from pincode; else NULL) + `coord_source` | facilities | 9,964 kept · **35 backfilled** · 89 nulled | **75% — Medium** | Backfill gives an *approximate* (pincode-area) location; bbox could clip a rare valid edge point |
 | `data_quality_flag` for likely column-shift-corrupted rows | facilities | 145 flagged | **70% — Medium** | Heuristic (type/country/typeId checks); flags, never drops — may have false +/− |
 | Dropped redundant `coordinates` (GeoJSON) and `countries` (0.3% filled) | facilities | — | **90% — High** | Redundant with lat/long and address_country |
+
+## unique_id audit (follow-up — presenters flagged IDs as imperfect)
+The first pass treated `unique_id` as the primary key without testing it. Audit found it is **not** reliable:
+- **11 duplicate UUIDs (22 rows)** — each pair is **byte-identical across all 52 columns** (verified via full-row MD5). Removed the redundant copy → **10,077 rows**, IDs now distinct. Lossless — no unique data lost.
+- **88 rows have an invalid `unique_id`** — not a UUID, but spilled text/coordinates from column-shift corruption. Kept (real rows) and marked with the new **`id_valid`** BOOLEAN; all 88 are also `data_quality_flag`=true.
+- Net: 10,088 → **10,077 rows · 10,077 distinct IDs · 9,989 valid UUIDs** (`id_valid`=true).
 
 ## Assumptions made
 1. The sentinel set `'' / null / NA / N/A / * / []` always means *missing/placeholder*, never real data.
@@ -45,6 +51,6 @@ The large majority of changes are **deterministic and lossless-by-design** (sent
 - **No imputation** of missing numerics.
 
 ## Known limitations
-- ✅ **`custom_logo_presence` is retained** (cleaned like other text fields). Only `coordinates` (redundant with lat/long) and `countries` (~0.3% filled) were intentionally dropped — so `facilities_clean` has 52 columns (49 original + specialties_count, coord_source, data_quality_flag).
+- ✅ **`custom_logo_presence` is retained** (cleaned like other text fields). Only `coordinates` (redundant with lat/long) and `countries` (~0.3% filled) were intentionally dropped — so `facilities_clean` has **53 columns** (49 original + specialties_count, coord_source, data_quality_flag, id_valid).
 - Coordinate backfill for the 35 repaired rows is **area-level, not exact** — fine for mapping/aggregation, not for precise routing. Always check `coord_source`.
 - The `data_quality_flag` is a **screening signal**, not a verified label.

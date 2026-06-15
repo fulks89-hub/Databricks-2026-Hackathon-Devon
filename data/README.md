@@ -6,7 +6,7 @@ Read in Python: `pandas.read_csv("data/facilities_clean.csv.gz")` (pandas auto-d
 
 | File | Rows | Cols | Notes |
 |---|---|---|---|
-| `facilities_clean.csv.gz` | 10,088 | 52 | The official challenge dataset (healthcare facilities), cleaned — incl. restored `custom_logo_presence` |
+| `facilities_clean.csv.gz` | 10,077 | 53 | The official challenge dataset (healthcare facilities), cleaned — incl. `custom_logo_presence` + `id_valid`; 11 exact duplicate rows removed |
 | `pincode_clean.csv.gz` | 165,627 | 11 | India Post PIN-code directory (geo bridge) |
 | `nfhs5_district_health_clean.csv.gz` | 706 | 109 | NFHS-5 district health indicators (enrichment) |
 
@@ -21,6 +21,7 @@ Read in Python: `pandas.read_csv("data/facilities_clean.csv.gz")` (pandas auto-d
 - **Coordinates repaired:** kept original lat/long when within India bounds (lat 6.0–37.5, lon 68.0–97.5); otherwise **backfilled from the pincode directory** via cleaned postcode; else NULL. New `coord_source` column = `original` (9,964) / `pincode_backfill` (35) / `none` (89).
 - **`farmacy` → `pharmacy`** in `facilityTypeId` (10 rows).
 - **`data_quality_flag`** (BOOLEAN) added — flags the ~145 column-shift-corrupted rows (e.g. JSON/coords landed in the wrong column) instead of dropping them.
+- **`unique_id` audit + dedupe:** `unique_id` was not unique — removed **11 byte-identical duplicate rows** (→ 10,077; IDs now distinct) and added **`id_valid`** (false for the 88 corrupted, non-UUID IDs). See `CLEANING_REPORT.md`.
 - Dropped redundant `coordinates` (GeoJSON string; lat/long retained) and `countries` (~0.3% populated, duplicates `address_country`). Added: `specialties_count`, `coord_source`, `data_quality_flag`.
 
 ### pincode_clean
