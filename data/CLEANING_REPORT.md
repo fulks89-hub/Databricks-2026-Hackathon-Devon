@@ -3,14 +3,14 @@
 **Scope:** cleaning of the Virtue Foundation India healthcare dataset (3 tables) exported to `data/*.csv.gz`.
 **Method:** cleaning SQL authored + adversarially reviewed by an agent fleet (facilities, pincode), NFHS-5 numeric casting generated programmatically; executed on a Databricks SQL warehouse.
 
-## Overall confidence: **90 / 100 (High)**
+## Overall confidence: **93 / 100 (High)**
 
 The large majority of changes are **deterministic and lossless-by-design** (sentinel→NULL, safe `try_cast`, trim, set-dedupe) and carry very high confidence. The score is held below ~95 by two judgment-based steps: **coordinate repair** (approximate for 35 rows) and the **corruption heuristic flag**. Row counts are preserved **except 11 byte-identical duplicate facility rows** removed in a follow-up `unique_id` audit (see *unique_id audit* below):
 
 | Table | Rows in | Rows out | Match |
 |---|---|---|---|
 | facilities | 10,088 | **10,077** | 11 exact dup rows removed |
-| pincode | 165,627 | 165,627 | ✅ |
+| pincode | 165,627 | **165,625** | 2 exact dup rows removed |
 | nfhs5_district_health | 706 | 706 | ✅ |
 
 ## What was cleaned — by operation
@@ -32,6 +32,14 @@ The first pass treated `unique_id` as the primary key without testing it. Audit 
 - **88 rows have an invalid `unique_id`** — not a UUID, but spilled text/coordinates from column-shift corruption. Kept (real rows) and marked with the new **`id_valid`** BOOLEAN; all 88 are also `data_quality_flag`=true.
 - Net: 10,088 → **10,077 rows · 10,077 distinct IDs · 9,989 valid UUIDs** (`id_valid`=true).
 
+## Final validation & polish (2026-06-15)
+A validation sweep across all three tables drove a final polish pass:
+- **Numeric outliers nulled** (facilities): implausible values → NULL — `capacity` kept 1–5,000 (was up to **200,000**), `numberDoctors` 1–3,000 (was up to **15,000**), `yearEstablished` 1800–2026.
+- **`state_norm`** added: facility state derived from the **pincode directory's authoritative state names** (via postcode) → clean ~36-value field at **96.3% coverage**, vs the raw `address_stateOrRegion`'s **253** messy values.
+- **`possible_entity_dup`** flag: marks **10 rows (5 groups)** sharing name+city under *different* IDs — likely duplicate facilities or co-located branches (flagged, not dropped).
+- **Pincode deduped**: 2 exact-duplicate rows removed (165,627 → 165,625).
+- **NFHS-5**: no changes needed (no duplicate districts; indicators within [0–100]).
+
 ## Assumptions made
 1. The sentinel set `'' / null / NA / N/A / * / []` always means *missing/placeholder*, never real data.
 2. Fields cast to numbers were intended numeric; non-numeric content was junk → NULL. **No imputation** was performed (sparse fields like `numberDoctors` 36% and `capacity` 25% stay NULL, not guessed).
@@ -51,6 +59,6 @@ The first pass treated `unique_id` as the primary key without testing it. Audit 
 - **No imputation** of missing numerics.
 
 ## Known limitations
-- ✅ **`custom_logo_presence` is retained** (cleaned like other text fields). Only `coordinates` (redundant with lat/long) and `countries` (~0.3% filled) were intentionally dropped — so `facilities_clean` has **53 columns** (49 original + specialties_count, coord_source, data_quality_flag, id_valid).
+- ✅ **`custom_logo_presence` is retained** (cleaned like other text fields). Only `coordinates` (redundant with lat/long) and `countries` (~0.3% filled) were intentionally dropped — so `facilities_clean` has **55 columns** (49 original + specialties_count, coord_source, data_quality_flag, id_valid, state_norm, possible_entity_dup).
 - Coordinate backfill for the 35 repaired rows is **area-level, not exact** — fine for mapping/aggregation, not for precise routing. Always check `coord_source`.
 - The `data_quality_flag` is a **screening signal**, not a verified label.

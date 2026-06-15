@@ -6,8 +6,8 @@ Read in Python: `pandas.read_csv("data/facilities_clean.csv.gz")` (pandas auto-d
 
 | File | Rows | Cols | Notes |
 |---|---|---|---|
-| `facilities_clean.csv.gz` | 10,077 | 53 | The official challenge dataset (healthcare facilities), cleaned — incl. `custom_logo_presence` + `id_valid`; 11 exact duplicate rows removed |
-| `pincode_clean.csv.gz` | 165,627 | 11 | India Post PIN-code directory (geo bridge) |
+| `facilities_clean.csv.gz` | 10,077 | 55 | The official challenge dataset, cleaned + polished — incl. `id_valid`, `state_norm`, `possible_entity_dup`; 11 dup rows removed; numeric outliers nulled |
+| `pincode_clean.csv.gz` | 165,625 | 11 | India Post PIN-code directory (geo bridge); 2 exact dup rows removed |
 | `nfhs5_district_health_clean.csv.gz` | 706 | 109 | NFHS-5 district health indicators (enrichment) |
 
 > ⚠️ **Treat the free-text "claim" fields (capability, procedure, equipment, description) as claims to verify, not ground truth** — per the hackathon brief.
@@ -22,6 +22,7 @@ Read in Python: `pandas.read_csv("data/facilities_clean.csv.gz")` (pandas auto-d
 - **`farmacy` → `pharmacy`** in `facilityTypeId` (10 rows).
 - **`data_quality_flag`** (BOOLEAN) added — flags the ~145 column-shift-corrupted rows (e.g. JSON/coords landed in the wrong column) instead of dropping them.
 - **`unique_id` audit + dedupe:** `unique_id` was not unique — removed **11 byte-identical duplicate rows** (→ 10,077; IDs now distinct) and added **`id_valid`** (false for the 88 corrupted, non-UUID IDs). See `CLEANING_REPORT.md`.
+- **Final polish:** numeric outliers nulled (capacity/doctors/year ranges); **`state_norm`** added (clean state from pincode, ~96% coverage); **`possible_entity_dup`** flags 10 same-name/city rows under different IDs; pincode deduped (−2 rows).
 - Dropped redundant `coordinates` (GeoJSON string; lat/long retained) and `countries` (~0.3% populated, duplicates `address_country`). Added: `specialties_count`, `coord_source`, `data_quality_flag`.
 
 ### pincode_clean
