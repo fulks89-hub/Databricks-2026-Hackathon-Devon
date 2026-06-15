@@ -1,0 +1,17 @@
+# Uncompressed data exports — committed as .csv.gz instead (see data/README.md)
+data/*.csv
+
+# Node / AppKit
+node_modules/
+dist/
+build/
+.next/
+.env
+.env.local
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
