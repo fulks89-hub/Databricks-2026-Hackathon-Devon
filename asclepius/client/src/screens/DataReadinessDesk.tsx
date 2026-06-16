@@ -24,17 +24,19 @@ import {
   XCircle,
   CheckCircle,
   Lightning,
+  CaretDown,
 } from '@phosphor-icons/react';
 import {
   useReadinessSummary,
   useReadinessGaps,
   useReadinessDistricts,
   useReadinessSparseFields,
+  useReadinessFacility,
   saveReadinessAction,
   type ReadinessGapRow,
   type ReadinessDistrictRow,
 } from '@/lib/api';
-import { KpiTile, ConfidenceChip } from '@/components/asclepius';
+import { KpiTile, ConfidenceChip, EvidenceQuote } from '@/components/asclepius';
 import type { ConfidenceLevel } from '@/components/asclepius/theme';
 import { fonts, neutral, role as roleTheme, semantic } from '@/components/asclepius/theme';
 
@@ -176,6 +178,34 @@ function ViewTabs({ view, onView }: { view: DeskView; onView: (v: DeskView) => v
   );
 }
 
+/* ---- lazily-fetched cited claim evidence (unverified_claims cards) ---------
+   Mounted ONLY when a card is expanded, so we fetch one facility's bundle on
+   demand (no N requests up front). Calls useReadinessFacility at its own top
+   level — never inside the queue's .map() — to respect rules-of-hooks. The
+   server already orders evidence corroboration='none' first, so the first row
+   with a non-empty snippet is the most-relevant uncorroborated claim text. */
+function ClaimEvidence({ uniqueId }: { uniqueId: string }) {
+  const { data, loading } = useReadinessFacility(uniqueId);
+  if (loading) {
+    return <Skeleton className="mt-2.5 h-[72px] rounded-[11px]" />;
+  }
+  const snippet = (data?.evidence ?? [])
+    .map((e) => (e.evidence_snippet ?? '').trim())
+    .find((s) => s.length > 0);
+  if (!snippet) {
+    return (
+      <div className="mt-2.5" style={{ fontSize: 12, color: neutral.textFaint2, fontStyle: 'italic' }}>
+        No cited claim text available.
+      </div>
+    );
+  }
+  return (
+    <div className="mt-2.5">
+      <EvidenceQuote text={snippet} sourceLabel="Facility-reported claim · not yet corroborated" />
+    </div>
+  );
+}
+
 /* ---- one record card in the reviewer queue -------------------------------- */
 function GapCard({
   row,
@@ -194,6 +224,7 @@ function GapCard({
   const [patching, setPatching] = useState(false);
   const [field, setField] = useState(firstField);
   const [value, setValue] = useState('');
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
   const st = STATUS_META[status] ?? STATUS_META.open;
   const resolved = status === 'patched' || status === 'dismissed';
 
@@ -259,6 +290,22 @@ function GapCard({
           <Lightning weight="fill" size={15} style={{ color: semantic.warn, marginTop: 2, flexShrink: 0 }} />
           <span><b style={{ fontWeight: 700 }}>Suggested:</b> {row.suggested_action}</span>
         </div>
+
+        {/* unverified-claims: reveal the verbatim cited facility text (lazy fetch) */}
+        {row.gap_type === 'unverified_claims' && (
+          <>
+            <button
+              type="button"
+              onClick={() => setEvidenceOpen((o) => !o)}
+              className="mt-2 inline-flex items-center gap-1 bg-transparent p-0"
+              style={{ fontFamily: fonts.body, fontWeight: 700, fontSize: 12, color: meta.color, border: 'none', cursor: 'pointer' }}
+            >
+              <CaretDown weight="bold" size={12} style={{ transform: evidenceOpen ? 'rotate(180deg)' : 'none', transition: 'transform .15s ease' }} />
+              {evidenceOpen ? 'Hide cited evidence' : 'Show cited evidence'}
+            </button>
+            {evidenceOpen && <ClaimEvidence uniqueId={row.unique_id} />}
+          </>
+        )}
       </div>
 
       {/* reach-out + actions */}

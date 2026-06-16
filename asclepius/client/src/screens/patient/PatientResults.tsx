@@ -295,31 +295,25 @@ function RadiusMap({
 }) {
   const o = CITY_LL[origin];
 
-  const pins = scored.slice(0, 40).map((s) => {
+  const pins = scored.slice(0, 40).flatMap((s) => {
     const lat = s.f.lat ?? (s.f.city ? CITY_LL[s.f.city]?.[0] : undefined);
     const lng = s.f.lng ?? (s.f.city ? CITY_LL[s.f.city]?.[1] : undefined);
-    // Scale ~1.1 deg ≈ radius edge; clamp into the plate. Fall back to a
-    // deterministic ring placement when coords are unavailable.
-    let x = 50;
-    let y = 50;
-    if (o && lat != null && lng != null) {
-      const degSpan = Math.max(0.5, radius / 110); // ~110 km per degree
-      x = 50 + ((lng - o[1]) / degSpan) * 44;
-      y = 50 - ((lat - o[0]) / degSpan) * 44;
-    } else {
-      let h = 0;
-      for (let i = 0; i < s.f.id.length; i++) h = (h * 31 + s.f.id.charCodeAt(i)) >>> 0;
-      const ang = (h % 360) * (Math.PI / 180);
-      const rad = 12 + (s.dist / radius) * 36;
-      x = 50 + Math.cos(ang) * rad;
-      y = 50 + Math.sin(ang) * rad;
-    }
+    // Honesty: facilities the list flags as "Distance approximate" (distApprox —
+    // no real lat/lng and no CITY_LL-known city) have no real position, so we
+    // must NOT plant a pin at a fabricated location. Omit them from the map; the
+    // origin + real-coord pins still render. If we somehow lack a usable origin
+    // or projected coords too, skip rather than invent a placement.
+    if (s.distApprox || !o || lat == null || lng == null) return [];
+    // Scale ~1.1 deg ≈ radius edge; clamp into the plate.
+    const degSpan = Math.max(0.5, radius / 110); // ~110 km per degree
+    let x = 50 + ((lng - o[1]) / degSpan) * 44;
+    let y = 50 - ((lat - o[0]) / degSpan) * 44;
     x = Math.max(5, Math.min(95, x));
     y = Math.max(6, Math.min(92, y));
     const t = normalizeTrust(s.f.trust);
     const bg = t === 'verified' ? role.clinician.base : t === 'review' ? '#B07A1E' : '#A99C88';
     const sz = s.fit >= 70 ? 30 : 26;
-    return { id: s.f.id, name: s.f.name, x, y, bg, sz };
+    return [{ id: s.f.id, name: s.f.name, x, y, bg, sz }];
   });
 
   return (

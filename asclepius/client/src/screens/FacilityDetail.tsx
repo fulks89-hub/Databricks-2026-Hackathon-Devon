@@ -551,6 +551,16 @@ export function FacilityDetail() {
     }));
   }, [gradedClaims.data, view]);
 
+  // Honesty caveat: per-capability grading is unavailable (the trust-card fetch
+  // is empty/errored — e.g. a cold Lakebase endpoint or a facility with no
+  // trust.facility_trust_card rows) yet we are still showing rows. Those rows
+  // are the legacy uniform 'Self-reported' tier, so surface that the live grade
+  // is missing rather than letting the screen masquerade as freshly graded.
+  const gradingUnavailable =
+    !gradedClaims.loading &&
+    ((gradedClaims.data ?? []).length === 0 || !!gradedClaims.error) &&
+    claimRows.length > 0;
+
   // ----- states -----------------------------------------------------------
 
   if (loading) return <LoadingState />;
@@ -641,6 +651,12 @@ export function FacilityDetail() {
             <SectionLabel icon={<ListChecks weight="fill" size={14} />} mt={26}>
               Claimed capabilities
             </SectionLabel>
+            {gradingUnavailable && (
+              <div className="mt-3 flex items-start gap-2.5" style={{ fontSize: 13, color: neutral.textSoft, fontWeight: fonts.weight.medium }}>
+                <Info weight="fill" size={16} color={semantic.warnDot} className="mt-0.5 shrink-0" />
+                Per-capability grading is temporarily unavailable — showing the facility&apos;s self-reported claims.
+              </div>
+            )}
             {claimRows.length ? (
               <div
                 className="mt-3 flex flex-col gap-px"
