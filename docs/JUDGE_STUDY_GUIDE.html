@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Asclepius — Judging Study Guide</title>
+<style>
+  :root{
+    --paper:#FAF6F0; --surface:#FFFFFF; --ink:#241F1A; --muted:#6E665B; --faint:#938A7C;
+    --line:#E7DFD2; --line2:#F0EAE0;
+    --green:#2E7D67; --green-soft:#E4EFEA;
+    --patient:#C0552F; --hospital:#2E558C; --planner:#6A3FA0; --planner-soft:#EFE9F6;
+    --amber:#9A6A12; --amber-soft:#F6EBD6;
+    --red:#B2503C; --red-soft:#F6E2DC;
+    --gold:#8a6d1a; --gold-bg:#FBF3DA;
+    --radius:14px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:64px}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+       font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+
+  /* sticky nav */
+  nav{position:sticky;top:0;z-index:50;background:rgba(250,246,240,.94);
+      backdrop-filter:saturate(140%) blur(6px);border-bottom:1px solid var(--line)}
+  nav .navinner{max-width:900px;margin:0 auto;padding:8px 14px;display:flex;flex-wrap:wrap;
+      gap:5px 6px;align-items:center}
+  nav a{font-size:12.5px;font-weight:600;color:var(--green);text-decoration:none;
+      padding:4px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
+      white-space:nowrap}
+  nav a:hover{background:var(--green-soft)}
+  nav .brand{font-weight:800;color:var(--ink);border:none;background:none;padding:4px 6px 4px 0;font-size:13.5px}
+
+  header.hero{padding:34px 0 10px}
+  .kicker{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--green);font-weight:800}
+  h1{font-size:34px;line-height:1.05;margin:8px 0 6px;letter-spacing:-.01em}
+  .sub{font-size:17px;color:var(--muted);max-width:62ch}
+
+  section{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+      padding:22px 24px;margin:18px 0;scroll-margin-top:62px}
+  section>h2{font-size:23px;margin:0 0 4px;letter-spacing:-.01em}
+  section>.lead{color:var(--muted);font-size:14.5px;margin:0 0 14px}
+  h3{font-size:15px;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint)}
+
+  ul{margin:6px 0 6px;padding-left:20px}
+  li{margin:5px 0}
+  li b, p b{color:var(--ink)}
+  .say{background:var(--green-soft);border-left:4px solid var(--green);border-radius:8px;
+      padding:10px 14px;margin:10px 0;font-size:14.5px}
+  .say::before{content:"SAY  ▸  ";font-weight:800;color:var(--green);font-size:11px;letter-spacing:.08em}
+  .where{display:inline-block;font-size:12px;font-weight:700;color:var(--planner);
+      background:var(--planner-soft);border-radius:6px;padding:1px 7px;margin-left:2px}
+
+  /* criterion badge */
+  .crit-num{display:inline-flex;width:26px;height:26px;border-radius:8px;align-items:center;justify-content:center;
+      background:var(--green);color:#fff;font-weight:800;font-size:14px;margin-right:9px;vertical-align:-5px}
+
+  table{width:100%;border-collapse:collapse;margin:8px 0 4px;font-size:14px}
+  th,td{text-align:left;vertical-align:top;padding:9px 11px;border-bottom:1px solid var(--line2)}
+  thead th{background:#FCFAF6;border-bottom:2px solid var(--line);font-size:11.5px;
+      text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  td b{color:var(--ink)}
+  td.where-cell{color:var(--planner);font-weight:600}
+  tbody tr:last-child td{border-bottom:none}
+
+  .qa{border:1px solid var(--line);border-radius:10px;padding:12px 15px;margin:9px 0;background:#FCFAF6}
+  .qa .q{font-weight:800;margin:0 0 4px;color:var(--ink)}
+  .qa .q::before{content:"Q  ";color:var(--red);font-weight:800}
+  .qa .a{margin:0;color:#33302b;font-size:14.5px}
+  .qa .a::before{content:"A  ";color:var(--green);font-weight:800}
+
+  /* honesty callout */
+  .honesty{background:var(--gold-bg);border:1px solid #E9D9A6;border-left:6px solid var(--gold);
+      border-radius:var(--radius);padding:18px 22px;margin:18px 0}
+  .honesty h2{margin:0 0 4px;color:#6f5712;font-size:21px}
+  .honesty .tag{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--gold)}
+  .story{margin:12px 0 0;padding:11px 0 0;border-top:1px dashed #E2D199}
+  .story:first-of-type{border-top:none;padding-top:2px}
+  .story b.h{display:block;font-size:15px;color:#5e4a0f}
+
+  /* demo flow */
+  .step{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid var(--line2)}
+  .step:last-child{border-bottom:none}
+  .t{flex:0 0 52px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;font-size:14px;padding-top:1px}
+  .step .body{flex:1}
+  .step .scr{font-weight:800;color:var(--planner)}
+  .step .body p{margin:3px 0 0;font-size:14px;color:#33302b}
+  .finale{background:var(--green-soft);border-radius:10px;padding:12px 16px;margin-top:12px;font-weight:600}
+
+  /* numbers cheat */
+  .nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 0}
+  .num{background:#FCFAF6;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .num b{display:block;font-size:22px;color:var(--green);line-height:1}
+  .num span{font-size:12.5px;color:var(--muted)}
+
+  .pillrow{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+  .pill{font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;border:1px solid var(--line)}
+  .pill.aut{background:var(--green-soft);color:var(--green)}
+  .pill.cor{background:var(--amber-soft);color:var(--amber)}
+  .pill.self{background:#EEE9DF;color:#7a7060}
+  .pill.con{background:var(--red-soft);color:var(--red)}
+
+  footer{color:var(--faint);font-size:12.5px;text-align:center;margin-top:26px}
+
+  @media print{
+    :root{--paper:#fff}
+    body{font-size:11.5pt;background:#fff}
+    .wrap{max-width:none;padding:0}
+    nav{display:none}
+    section,.honesty{break-inside:avoid;border:1px solid #ccc;box-shadow:none;margin:10px 0;page-break-inside:avoid}
+    section{break-before:page}
+    header.hero{break-after:avoid}
+    .honesty{break-before:auto}
+    a{color:inherit;text-decoration:none}
+    h1{font-size:26pt}
+  }
+</style>
+</head>
+<body>
+
+<nav><div class="navinner">
+  <span class="brand">⚕ Asclepius · Judge Guide</span>
+  <a href="#pitch">Pitch</a>
+  <a href="#honesty">Honesty edge</a>
+  <a href="#c1">1 · Product</a>
+  <a href="#c2">2 · Evidence</a>
+  <a href="#c3">3 · Technical</a>
+  <a href="#c4">4 · Ambition</a>
+  <a href="#decisions">Decisions</a>
+  <a href="#dataquality">Data quality</a>
+  <a href="#qa">Q&amp;A</a>
+  <a href="#demo">3-min demo</a>
+  <a href="#cheat">Cheat sheet</a>
+</div></nav>
+
+<div class="wrap">
+
+<header class="hero" id="pitch">
+  <div class="kicker">DAIS Hackathon · Apps &amp; Agents for Good · Show-and-tell talk track</div>
+  <h1>Asclepius — judging study guide</h1>
+  <p class="sub">Read from this during the 3-minute demo + Q&amp;A. Every point maps to <b>where it shows in the app</b>. <b>Honesty is our edge — lead with it.</b></p>
+
+  <h3 style="margin-top:18px">The pitch (say this first — ~20s)</h3>
+  <div class="say">Asclepius turns ~10,000 messy, AI-scraped Indian health-facility records into decisions a <b>non-technical NGO planner</b> can actually trust. One app spans three jobs — <b>can a facility do what it claims?</b> (Trust Desk), <b>where are the real care gaps?</b> (Medical Desert), and <b>what must be fixed before we trust the data?</b> (Readiness Desk) — and it is relentlessly honest about which numbers are verified versus self-reported.</div>
+</header>
+
+<!-- ============================ HONESTY EDGE ============================ -->
+<div class="honesty" id="honesty">
+  <span class="tag">OUR EDGE — OPEN AND CLOSE WITH THIS</span>
+  <h2>Honesty is the product</h2>
+  <p style="margin:4px 0 0;font-size:14.5px">Anyone can build a directory. We built the thing that tells a planner <b>what NOT to trust</b> — and twice we chose the harder, honest path over a better-looking number.</p>
+
+  <div class="story">
+    <b class="h">Honesty story #1 — we deleted our own headline stat</b>
+    Our first corroboration pass flagged <b>83% of claims “unsupported.”</b> Instead of shipping a scary number, we proved it was an <b>artifact</b>: marketing blurbs don’t list commodity gear (no hospital writes “we own an ECG machine”). So we made corroboration <b>positive-only</b> — “no evidence in the text” is shown as <b>neutral, never “can’t do it.”</b>
+  </div>
+  <div class="story">
+    <b class="h">Honesty story #2 — we declined the VPN</b>
+    The strongest specialty-level source (<b>PM-JAY</b>) is <b>geo-fenced to India</b>. We proved it was the portal, not our network — then <b>declined a VPN bypass on ethics</b> and used peer-reviewed <b>PLoS</b> research + official <b>S3WaaS</b> government data + the <b>NABH</b> registry instead. Honest provenance over a sketchy grab.
+  </div>
+</div>
+
+<!-- ============================ CRITERION 1 ============================ -->
+<section id="c1">
+  <h2><span class="crit-num">1</span>Product judgment</h2>
+  <p class="lead">Clear user? Thoughtful workflow + tradeoffs?</p>
+
+  <ul>
+    <li><b>One real user, named:</b> a non-technical <b>NGO planner / coordinator</b> deciding where to send people, money, and clinicians. Not a data scientist — no SQL, no jargon.</li>
+    <li><b>The workflow mirrors their job, not the data model:</b> pick a persona on the landing page, then <b>find care</b> → <b>find the gaps</b> → <b>fix the data</b>. Each is a screen, each ends in an <b>action</b> (save a priority, patch a record, refer a patient).</li>
+    <li><b>The hard tradeoff, made on purpose:</b> we <b>under-claim</b>. We’d rather say “self-reported” than falsely say “verified.” A planner who over-trusts a bad record sends a patient to a clinic that can’t help — so the product is tuned for <b>precision over coverage</b>.</li>
+    <li><b>Closed the loop:</b> a planner doesn’t just read — they <b>review, override, merge, and flag</b>, and those edits reshape what every other view shows.</li>
+  </ul>
+  <div class="say">“We built this for one person — an NGO planner with no technical background — and every screen ends in a decision they can act on, not a dashboard they have to interpret.”</div>
+  <h3>Where it shows</h3>
+  <ul>
+    <li><span class="where">Landing /</span> persona chooser (Patient · Clinician · Hospital · <b>Medical Planner</b>).</li>
+    <li><span class="where">/planner</span> deserts → <span class="where">/readiness</span> fix-the-data → <span class="where">/facility/:id</span> verify-the-claim — the planner’s three moves.</li>
+    <li><span class="where">/readiness</span> one-click <b>suggested fix</b> per row + click-to-call / mailto — non-technical remediation.</li>
+  </ul>
+</section>
+
+<!-- ============================ CRITERION 2 ============================ -->
+<section id="c2">
+  <h2><span class="crit-num">2</span>Evidence &amp; uncertainty</h2>
+  <p class="lead">Outputs grounded in citations? Uncertainty handled honestly?</p>
+
+  <ul>
+    <li><b>Every claim is graded, not asserted.</b> For each facility × claimed service we show a <b>trust tier</b>, and we quote the <b>verbatim source text</b> it rests on:</li>
+  </ul>
+  <div class="pillrow">
+    <span class="pill aut">Authority-verified</span><span class="pill cor">Corroborated</span><span class="pill self">Self-reported</span><span class="pill con">Conflicting evidence</span>
+  </div>
+  <ul>
+    <li><b>Stratified and labelled:</b> ~<b>16% authority-verified</b> (an independent NABH certificate behind it) vs ~<b>84% self-reported</b> — and <b>every score says which tier it rests on.</b> We never average the two into a fake single number.</li>
+    <li><b>Uncertainty is a first-class output, not a disclaimer.</b> Per-record <b>data-confidence</b>, sparse-field flags, and the signature <b>data-poor vs real-gap</b> split tell a planner which scarcity scores to trust.</li>
+    <li><b>The AI assistant can’t hallucinate a fact:</b> the server re-anchors every quote as a <b>literal substring</b> of the real record; if nothing anchors, it <b>asks a clarifying question</b> instead of guessing.</li>
+    <li><b>Positive-only corroboration</b> (honesty story #1): “no evidence in the text” = neutral, never “can’t do it.”</li>
+  </ul>
+  <div class="say">“Nothing here is asserted — it’s cited. Each capability carries a trust tier and the exact source text. And we’re loud about uncertainty: only one in six claims is authority-verified, and we tell you which.”</div>
+  <h3>Where it shows</h3>
+  <ul>
+    <li><span class="where">/facility/:id</span> the four claim tiers, the <b>“✓ NABH-certified”</b> badge linking the official scope PDF, “<b>How we read this record</b>” (free-text → parsed fields with confidence chips), and the quoted <b>evidence</b> block.</li>
+    <li><span class="where">/planner</span> the per-service <b>Evidence panel</b> (nearest claiming facility + verbatim claim) and the <b>“unknown supply — data-poor”</b> badge.</li>
+    <li><span class="where">AI assistant</span> inline <b>[facility · field] citation chips</b> + a confidence band (no number) or a clarifying question.</li>
+  </ul>
+</section>
+
+<!-- ============================ CRITERION 3 ============================ -->
+<section id="c3">
+  <h2><span class="crit-num">3</span>Technical execution</h2>
+  <p class="lead">Works live? Databricks used well?</p>
+
+  <ul>
+    <li><b>It’s live right now</b> — one Databricks App on Free Edition, login-gated, serving all three desks.</li>
+    <li><b>A real medallion pipeline:</b> <b>Unity Catalog gold → Lakebase synced tables → this app.</b> Heavy analytics live in UC; the app reads low-latency Lakebase Postgres; planner edits persist to a writable Lakebase OLTP schema.</li>
+    <li><b>Five Databricks tools, one app:</b> <b>Lakebase</b> (reads + writes), <b>Foundation Models</b> (the grounded assistant, Llama-3.3-70B), <b>Vector Search</b>, the <b>SQL warehouse</b>, and the provided <b>FDR + NFHS</b> datasets.</li>
+    <li><b>Well-architected for honesty &amp; change:</b> the data layers swap behind stable views, and the trust tiers, desert scores, and readiness queue are all <b>computed in the lakehouse</b> — not faked in the front end.</li>
+  </ul>
+  <div class="say">“This isn’t a mockup. It’s Unity Catalog gold tables synced into Lakebase, read by a live Databricks App, with Foundation Models powering the assistant — five Databricks tools working together.”</div>
+  <h3>Where it shows</h3>
+  <ul>
+    <li><b>The whole demo is the proof</b> — it’s loading live from Lakebase as you click.</li>
+    <li><span class="where">AI assistant</span> a Foundation-Model answer, grounded server-side.</li>
+    <li><span class="where">/readiness</span> a planner edit writes back to Lakebase and the queue updates.</li>
+  </ul>
+</section>
+
+<!-- ============================ CRITERION 4 ============================ -->
+<section id="c4">
+  <h2><span class="crit-num">4</span>Ambition</h2>
+  <p class="lead">Went beyond the minimum, meaningfully?</p>
+
+  <ul>
+    <li><b>One app spans three tracks</b> — Trust Desk (T1), Medical Desert (T2), Data Readiness Desk (T4) — as a single coherent planner workflow, not three demos.</li>
+    <li><b>An independent authority tier (NABH):</b> we went and pulled the official accreditation registry and parsed each facility’s <b>certificate/scope PDF</b> for audited, specialty-level scope + sanctioned bed counts. That’s evidence the provided dataset doesn’t contain.</li>
+    <li><b>The signature insight — <span style="color:var(--green)">data-poor vs real-gap</span>:</b> a per-district data-confidence layer so a planner knows a “0-facility” district is a <b>missing-data artifact</b>, not proven absence. That distinction is the difference between a useful tool and a misleading one.</li>
+    <li><b>Access, not counts:</b> the desert score is per-capita severity = <b>need × proximity</b> (care-tier distance bands) + a population-burden overlay — rolled specialty → capability → area.</li>
+    <li><b>A grounded, agentic assistant</b> that ranks the data on demand and asks for context instead of refusing.</li>
+  </ul>
+  <div class="say">“The minimum was answer one track. We answered three in one workflow, added an independent accreditation tier the dataset never had, and built the one thing a directory never gives you — a map of where the data itself can’t be trusted.”</div>
+  <h3>Where it shows</h3>
+  <ul>
+    <li><span class="where">/atlas</span> the national coverage × condition map (and the bivariate “act-here” overlay).</li>
+    <li><span class="where">/facility/:id</span> the NABH authority badge + cert PDF.</li>
+    <li><span class="where">/planner + /readiness</span> the data-poor-vs-real-gap split, surfaced on both.</li>
+  </ul>
+</section>
+
+<!-- ============================ DECISIONS ============================ -->
+<section id="decisions">
+  <h2>Key decisions &amp; why</h2>
+  <p class="lead">If a judge asks “why did you do it that way?” — point here.</p>
+  <table>
+    <thead><tr><th style="width:46%">Decision</th><th>One-line why</th></tr></thead>
+    <tbody>
+      <tr><td><b>Treat capability / procedure / equipment / specialties as CLAIMS to verify</b></td><td>The brief says these noisy fields are claims, not ground truth — so we grade, we don’t trust.</td></tr>
+      <tr><td><b>Corroboration is POSITIVE-ONLY</b></td><td>You can’t refute a service from a marketing blurb; “no evidence” is neutral. (Fixed the 83% false-“unsupported” artifact.)</td></tr>
+      <tr><td><b>Accreditation match is precision-favoring + city-confirmed</b></td><td>We’d rather under-count than ever falsely call a facility accredited.</td></tr>
+      <tr><td><b>NABH as an independent AUTHORITY tier</b></td><td>~16% matched the official registry; their cert PDFs give audited specialty-level scope + sanctioned beds — the strongest “can it really do this” signal.</td></tr>
+      <tr><td><b>Don’t over-credit accreditation</b></td><td>Org accreditation ≠ certification of every claimed service — so an accredited org still shows un-certified claims as self-reported.</td></tr>
+      <tr><td><b>Stratify and label every score by tier</b></td><td>~16% authority-verified vs ~84% self-reported — a planner must know what each number rests on.</td></tr>
+      <tr><td><b>Declined a VPN; used PLoS + S3WaaS + NABH</b></td><td>The best source was geo-fenced; ethical, honest provenance beats a sketchy bypass.</td></tr>
+      <tr><td><b>Desert = per-capita severity (need × proximity) + population overlay</b></td><td>Measures real <b>access</b>, not facility counts; a count map hides distance and density.</td></tr>
+      <tr><td><b>A per-district data_confidence layer</b></td><td>So planners can separate a <b>real</b> care gap from a <b>data-poor</b> one — the signature insight.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================ DATA QUALITY ============================ -->
+<section id="dataquality">
+  <h2>Data-quality issues — and where we surface each</h2>
+  <p class="lead">The dataset is messy on purpose. Here’s every issue, our approach, and the exact place a judge can see it.</p>
+  <table>
+    <thead><tr><th style="width:26%">Issue</th><th style="width:42%">How we approached it</th><th>Where it shows in the app</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Free-text is marketing, not an inventory</b> — can’t refute claims from it</td>
+        <td>Positive-only corroboration + the four trust tiers; quote the source text rather than judge absence</td>
+        <td class="where-cell">/facility/:id — claim tiers + “How we read this record” + quoted evidence</td>
+      </tr>
+      <tr>
+        <td><b>Sparse structured fields</b> (capacity ~25%, doctors ~36%)</td>
+        <td>Flagged as gaps; NABH <b>verified bed counts</b> fill capacity where a facility is accredited</td>
+        <td class="where-cell">/readiness → “Sparse fields” queue · /facility/:id → NABH verified beds</td>
+      </tr>
+      <tr>
+        <td><b>Missing / contaminated coordinates</b> (coord_source = none, bad pincode coords)</td>
+        <td>Repaired where possible, flagged otherwise; maps only plot trustworthy coords</td>
+        <td class="where-cell">/readiness → “Missing coords” queue · coord-source shown on /facility/:id</td>
+      </tr>
+      <tr>
+        <td><b>Duplicate records</b> (possible_entity_dup)</td>
+        <td>Surfaced for a human merge/keep decision that persists</td>
+        <td class="where-cell">/readiness → “Possible duplicate” queue · /registry → Duplicates tab (merge/keep)</td>
+      </tr>
+      <tr>
+        <td><b>Corrupted / invalid rows</b> (column-shifted, non-UUID ids)</td>
+        <td>Split into their own review lane; unreadable names labelled, not hidden</td>
+        <td class="where-cell">/readiness → “Corrupted” (88) + “Flagged quality” (57) queues</td>
+      </tr>
+      <tr>
+        <td><b>Dead / wrong-entity / misspelled facility URLs</b> (~35% dead in a scrape pilot)</td>
+        <td>We deliberately did <b>not</b> rely on homepage scraping (circular + unreliable); we cite the FDR record, not a live page</td>
+        <td class="where-cell">/facility/:id — evidence labelled as the FDR record field, not a scraped site</td>
+      </tr>
+      <tr>
+        <td><b>District join gaps</b> (182 / 706 districts show 0 facilities; ~894 facilities unmapped)</td>
+        <td>Don’t score a join gap as scarcity; flag it as data-poor via the data_confidence layer</td>
+        <td class="where-cell">/planner → “unknown supply — data-poor” badge · /readiness → district roll-up</td>
+      </tr>
+      <tr>
+        <td><b>Long-tail specialties</b></td>
+        <td>Validation covers the top-200 specialties = ~95% of claim volume; rarer ones confidence-flagged</td>
+        <td class="where-cell">/facility/:id — confidence chips on the rarer claims</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================ Q&A ============================ -->
+<section id="qa">
+  <h2>Anticipated judge questions — honest answers</h2>
+  <p class="lead">Short, honest, no hedging. Lead with the honest part.</p>
+
+  <div class="qa">
+    <p class="q">Why is only ~16% “verified”?</p>
+    <p class="a">Because only ~16% have an <b>independent authority</b> — an official NABH certificate — behind them. We refuse to call the other 84% “verified” off a facility’s own marketing. The 16% is a floor of <b>audited</b> truth, not a ceiling of our coverage, and every score says which tier it rests on.</p>
+  </div>
+  <div class="qa">
+    <p class="q">Isn’t “no evidence” just missing data?</p>
+    <p class="a">Exactly — which is why corroboration is <b>positive-only</b>. Our first cut flagged 83% “unsupported”; we proved that was an artifact (blurbs don’t list commodity gear like ECG), so “no evidence in the text” is shown as <b>neutral, never “can’t do it.”</b></p>
+  </div>
+  <div class="qa">
+    <p class="q">How is this different from a directory / Google Maps?</p>
+    <p class="a">A directory lists claims; we <b>grade</b> them. Every capability carries a trust tier + cited source text, the desert map weights by <b>access</b> not counts, and the Readiness Desk lets a planner <b>fix the data</b> and see what’s a real gap versus a data artifact.</p>
+  </div>
+  <div class="qa">
+    <p class="q">What in here is NOT trustworthy?</p>
+    <p class="a">The ~84% self-reported claims (shown as self-reported), the <b>data-poor districts</b> (0 mapped facilities = a join gap, not proven absence), and sparse fields like capacity (~25% filled). We surface all of it — never hide it. That honesty <b>is</b> the feature.</p>
+  </div>
+  <div class="qa">
+    <p class="q">Why not scrape facility websites or use PM-JAY for richer data?</p>
+    <p class="a">PM-JAY is <b>geo-fenced to India</b> (we proved it’s the portal, not our network) and we <b>declined a VPN bypass on ethics</b>. ~35% of scraped homepages were dead or wrong-entity — circular evidence. We used peer-reviewed PLoS + official S3WaaS government data + NABH instead.</p>
+  </div>
+  <div class="qa">
+    <p class="q">Does it actually work live, and is it really Databricks?</p>
+    <p class="a">Yes — it’s loading live as we click: Unity Catalog gold → Lakebase synced tables → this app, with Foundation Models powering the assistant. Five Databricks tools in one app.</p>
+  </div>
+  <div class="qa">
+    <p class="q">Can a non-technical NGO worker really use this?</p>
+    <p class="a">It’s built for exactly that person: choose a persona, work a queue with one-click suggested fixes and click-to-call, save priorities — no SQL, no jargon. The complexity lives in the lakehouse, not in their way.</p>
+  </div>
+</section>
+
+<!-- ============================ DEMO FLOW ============================ -->
+<section id="demo">
+  <h2>The 3-minute demo flow</h2>
+  <p class="lead">Driver clicks, narrator speaks. End on the honesty + ambition beat. Pre-warm the app + Lakebase endpoint before you start.</p>
+
+  <div class="step"><div class="t">0:00</div><div class="body">
+    <span class="scr">Landing /</span> — “Asclepius turns 10,000 messy Indian facility records into decisions a non-technical NGO planner can trust.” <b>Pick “I’m a Medical Planner.”</b>
+  </div></div>
+  <div class="step"><div class="t">0:20</div><div class="body">
+    <span class="scr">/planner</span> — top deserts. Flip the lens (<b>Deploy-priority / burden ↔ Most-isolated / per-capita</b>). Drill one district → capability → service; show the <b>nearest-km</b> and the cited nearest facility. <p>“We rank by <b>access</b>, not facility counts.”</p>
+  </div></div>
+  <div class="step"><div class="t">0:55</div><div class="body">
+    <span class="scr">/planner</span> — point at an <b>“unknown supply — data-poor”</b> badge. <p>“This district shows 0 facilities — but that’s a <b>data gap</b>, not proven absence. We tell a planner which scarcity to trust. <b>This is our signature insight.</b>”</p>
+  </div></div>
+  <div class="step"><div class="t">1:15</div><div class="body">
+    <span class="scr">/readiness</span> — work the queue: open a <b>Corrupted</b> record, then a <b>Sparse-fields</b> fix; hit a one-click <b>suggested action</b>. <p>“The planner <b>fixes the data</b>, and that reshapes every other view. This is the Data Readiness Desk.”</p>
+  </div></div>
+  <div class="step"><div class="t">1:45</div><div class="body">
+    <span class="scr">/facility/:id</span> — open a NABH-certified facility: the <b>“✓ NABH-certified”</b> badge + cert PDF, then the per-claim tiers. <p>“Each service is graded — authority-verified, corroborated, or self-reported — with the source text quoted. Independent audit, not marketing.”</p>
+  </div></div>
+  <div class="step"><div class="t">2:15</div><div class="body">
+    <span class="scr">Honesty beat (face the judges)</span> <p>“Only ~16% are authority-verified — and <b>we say so</b>. We refuse to call marketing ‘verified.’ A first model flagged 83% ‘unsupported’; we proved it was an artifact and made corroboration positive-only. And we declined a VPN to grab a geo-fenced source. <b>Honest provenance is our edge.</b>”</p>
+  </div></div>
+  <div class="step"><div class="t">2:40</div><div class="body">
+    <span class="scr">AI assistant (optional, if time)</span> — as the planner, ask <b>“top 10 facilities with the most missing data.”</b> <p>“Grounded, cited, ranked live from the readiness layer — and it asks for context instead of guessing.”</p>
+  </div></div>
+  <div class="finale">Close: “One app, three tracks, built on Databricks — and honest about exactly what it knows and what it doesn’t.”</div>
+</section>
+
+<!-- ============================ CHEAT SHEET ============================ -->
+<section id="cheat">
+  <h2>Cheat sheet — numbers &amp; routes</h2>
+  <h3>Numbers to cite confidently</h3>
+  <div class="nums">
+    <div class="num"><b>10,077</b><span>facilities (the FDR challenge data)</span></div>
+    <div class="num"><b>~16%</b><span>authority-verified (NABH) vs ~84% self-reported</span></div>
+    <div class="num"><b>706</b><span>districts scored for scarcity</span></div>
+    <div class="num"><b>182</b><span>districts with 0 mapped facilities (data-poor, not absence)</span></div>
+    <div class="num"><b>18,156</b><span>data-readiness gaps in the review queue</span></div>
+    <div class="num"><b>5</b><span>Databricks tools in one app</span></div>
+    <div class="num"><b>~25% / ~36%</b><span>capacity / doctor-count fill rates (sparse)</span></div>
+    <div class="num"><b>top-200 = ~95%</b><span>of claim volume validated</span></div>
+  </div>
+  <h3>Route map (what each screen is)</h3>
+  <table>
+    <thead><tr><th style="width:24%">Route</th><th>What it is / the track</th></tr></thead>
+    <tbody>
+      <tr><td><b>/</b></td><td>Landing — persona chooser (Patient · Clinician · Hospital · Medical Planner)</td></tr>
+      <tr><td><b>/facility/:id</b></td><td><b>Trust Desk (Track 1)</b> — claim tiers, NABH cert badge, cited evidence, confirm/dispute</td></tr>
+      <tr><td><b>/planner</b></td><td><b>Medical Desert (Track 2)</b> — dual-lens deserts, drill-down, data-poor badge, save priority</td></tr>
+      <tr><td><b>/readiness</b></td><td><b>Data Readiness Desk (Track 4)</b> — review queue, suggested fixes, data-poor vs real-gap (planner-only)</td></tr>
+      <tr><td><b>/atlas</b></td><td>National coverage × NFHS-5 condition map (+ “act-here” overlay)</td></tr>
+      <tr><td><b>/registry</b></td><td>Browse all facilities; Data-quality + Duplicates tabs (planner-only)</td></tr>
+      <tr><td><b>AI assistant</b></td><td>Floating, persona-aware, grounded + cited; planner data lens</td></tr>
+    </tbody>
+  </table>
+  <h3>Demo-day pre-flight (do NOT skip)</h3>
+  <ul>
+    <li><b>Re-warm the Lakebase endpoint</b> (it auto-suspends when idle) and <b>redeploy</b> right before judging to reset the 24h auto-stop.</li>
+    <li>Be logged in (the app is login-gated); pick a NABH-certified facility you’ve pre-checked for the Trust Desk beat.</li>
+    <li>Have one good <b>data-poor</b> district and one <b>corrupted</b> readiness record bookmarked so the demo never stalls.</li>
+  </ul>
+</section>
+
+<footer>Asclepius · DAIS Hackathon — Apps &amp; Agents for Good · internal judging talk track. Lead with the honesty.</footer>
+
+</div>
+</body>
+</html>

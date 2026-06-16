@@ -24,6 +24,7 @@ import {
   type AssistantCitation,
   type AssistantUncertainty,
   type AssistantSuggestedAction,
+  type AssistantMode,
 } from '@/lib/api';
 import { confidence, neutral, role as roleTokens, fonts } from './theme';
 
@@ -47,6 +48,7 @@ const PERSONA_LABEL: Record<AssistantPersona, string> = {
   patient: 'Patient',
   clinician: 'Clinician',
   hospital: 'Hospital',
+  planner: 'Planner',
 };
 
 /** Persona-tuned opening line + suggested prompts (EN only for v1). */
@@ -70,6 +72,15 @@ const PERSONA_INTRO: Record<AssistantPersona, { greeting: string; presets: strin
       "Hi — I'm grounded in the Asclepius coverage data. Ask about your gaps and local demand, and I can draft a recruiting posting for you to confirm.",
     presets: ['What disciplines are we missing nearby?', 'Coverage gaps in my district', 'Help me post an opening'],
   },
+  planner: {
+    greeting:
+      "Hi — I'm grounded in the Asclepius readiness layer. Ask me to rank facilities by data completeness, data confidence, or number of gaps, and I'll pull the exact records that need fixing first.",
+    presets: [
+      'Top 10 facilities with the most missing data',
+      'Lowest data-quality facilities',
+      'Which facilities have the most gaps?',
+    ],
+  },
 };
 
 /** Map the server uncertainty band to the shared ConfidenceChip palette. */
@@ -86,6 +97,7 @@ interface ChatMessage {
   content: string;
   citations: AssistantCitation[];
   uncertainty: AssistantUncertainty | null;
+  mode: AssistantMode | null;
   actions: ConfirmableAction[];
 }
 
@@ -153,6 +165,7 @@ export function ChatAssistant({ persona }: ChatAssistantProps) {
         content: trimmed,
         citations: [],
         uncertainty: null,
+        mode: null,
         actions: [],
       };
       // Snapshot history (prior turns) BEFORE appending this user turn.
@@ -172,6 +185,7 @@ export function ChatAssistant({ persona }: ChatAssistantProps) {
           content: res.answer || 'I could not find source text to support an answer.',
           citations: res.citations,
           uncertainty: res.uncertainty,
+          mode: res.mode,
           actions: res.suggestedActions.map((action) => ({
             id: nextId('act'),
             action,
@@ -355,7 +369,7 @@ export function ChatAssistant({ persona }: ChatAssistantProps) {
                 </span>
               </div>
               <div style={{ fontSize: 12, color: neutral.textFaint }}>
-                {PERSONA_LABEL[persona]} · grounded in facility data
+                {PERSONA_LABEL[persona]} · grounded in {persona === 'planner' ? 'readiness data' : 'facility data'}
               </div>
             </div>
             <button
@@ -475,8 +489,15 @@ export function ChatAssistant({ persona }: ChatAssistantProps) {
                     </div>
                   )}
 
-                  {/* per-message confidence chip */}
-                  {m.uncertainty && <ConfidenceBand uncertainty={m.uncertainty} />}
+                  {/* confidence signal — only when meaningful: a green "grounded
+                      in data" badge for structured answers, a band chip only when
+                      real citations anchored, and nothing on clarify/insufficient
+                      (so there is no perpetual "Low confidence · 0"). */}
+                  {m.mode === 'data' ? (
+                    <DataGroundedBadge />
+                  ) : m.mode === 'grounded' && m.citations.length > 0 && m.uncertainty ? (
+                    <ConfidenceBand uncertainty={m.uncertainty} />
+                  ) : null}
 
                   {/* confirmable action chips */}
                   {m.actions.length > 0 && (
@@ -613,7 +634,25 @@ export function ChatAssistant({ persona }: ChatAssistantProps) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* The per-message confidence band chip (uncertainty.band + score).            */
+/* A calm "grounded in readiness data" badge for structured data answers        */
+/* (mode='data'): the numbers are exact DB values, so we confirm the source     */
+/* rather than show a numeric confidence.                                       */
+/* -------------------------------------------------------------------------- */
+function DataGroundedBadge() {
+  return (
+    <span
+      className="inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+      style={{ color: confidence.high.fg, background: confidence.high.bg }}
+      title="Computed directly from the live readiness.data_readiness table."
+    >
+      <CheckCircle weight="fill" size={12} />
+      Grounded in readiness data
+    </span>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* The per-message confidence band chip (band only — no numeric score).         */
 /* -------------------------------------------------------------------------- */
 function ConfidenceBand({ uncertainty }: { uncertainty: AssistantUncertainty }) {
   const meta = BAND_META[uncertainty.band];
@@ -626,7 +665,7 @@ function ConfidenceBand({ uncertainty }: { uncertainty: AssistantUncertainty }) 
         title={uncertainty.caveats.join(' ')}
       >
         <Icon weight="fill" size={12} />
-        {uncertainty.band.charAt(0).toUpperCase() + uncertainty.band.slice(1)} confidence · {uncertainty.score}
+        {uncertainty.band.charAt(0).toUpperCase() + uncertainty.band.slice(1)} confidence
       </span>
       {uncertainty.caveats.length > 0 && (
         <span className="pl-0.5 text-[10.5px] leading-[1.4]" style={{ color: neutral.textFaint2, maxWidth: 280 }}>

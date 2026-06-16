@@ -1022,8 +1022,9 @@ export async function removePlannerPriority(
 // createPosting). No ungrounded prose ever reaches here.
 // ===========================================================================
 
-/** The three personas the assistant grounds for (AI_GROUNDING §6). */
-export type AssistantPersona = 'patient' | 'clinician' | 'hospital';
+/** The personas the assistant grounds for (AI_GROUNDING §6). `planner` uses the
+ *  structured readiness-data lens instead of facility-text RAG. */
+export type AssistantPersona = 'patient' | 'clinician' | 'hospital' | 'planner';
 
 /** Optional retrieval scope narrowing (state filter joins facility_district). */
 export interface AssistantScope {
@@ -1078,11 +1079,20 @@ export interface AssistantSuggestedAction {
   payload: Record<string, unknown>;
 }
 
+/**
+ * How a turn should render: a RAG answer with guarded citations (`grounded`), a
+ * structured readiness-data answer (`data`), a clarifying question back to the
+ * user (`clarify`), or an honest no-evidence note (`insufficient`). Drives the
+ * confidence-chip behaviour client-side.
+ */
+export type AssistantMode = 'grounded' | 'data' | 'clarify' | 'insufficient';
+
 export interface AssistantResponse {
   answer: string;
   citations: AssistantCitation[];
   uncertainty: AssistantUncertainty;
   suggestedActions: AssistantSuggestedAction[];
+  mode: AssistantMode;
 }
 
 /** Ask the grounded multi-persona assistant. POST /api/assistant */
@@ -1098,6 +1108,7 @@ export async function askAssistant(req: AssistantRequest): Promise<AssistantResp
     citations: payload.citations ?? [],
     uncertainty: payload.uncertainty ?? { score: 0, band: 'low', caveats: [] },
     suggestedActions: payload.suggestedActions ?? [],
+    mode: payload.mode ?? 'grounded',
   };
 }
 

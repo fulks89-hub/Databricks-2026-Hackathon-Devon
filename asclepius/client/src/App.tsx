@@ -544,9 +544,12 @@ function Layout() {
     setNotifOpen(false);
   };
 
-  // The chat assistant grounds for the 3 user personas; planner/none → patient.
-  const assistantPersona: 'patient' | 'clinician' | 'hospital' =
-    persona === 'clinician' || persona === 'hospital' ? persona : 'patient';
+  // The chat assistant grounds for all 4 personas; planner uses the structured
+  // readiness-data lens. Only `null` (no persona / Landing) falls back to patient.
+  const assistantPersona: 'patient' | 'clinician' | 'hospital' | 'planner' =
+    persona === 'clinician' || persona === 'hospital' || persona === 'planner'
+      ? persona
+      : 'patient';
 
   return (
     <div className="asc-app flex min-h-screen flex-col">

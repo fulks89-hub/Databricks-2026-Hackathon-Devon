@@ -35,9 +35,14 @@ import type { AppkitLike, LakebaseClient } from './persistence-routes.js';
 // The wire contract (mirrors client/src/lib/api.ts AssistantResponse).
 // ---------------------------------------------------------------------------
 
-type Persona = 'patient' | 'clinician' | 'hospital';
+type Persona = 'patient' | 'clinician' | 'hospital' | 'planner';
 type ActionType = 'shortlist' | 'refer' | 'post_opening';
 type Band = 'high' | 'medium' | 'low';
+// How the client should render a turn: a RAG answer with guarded citations
+// (grounded), a structured readiness-data answer (data), a question back to the
+// user (clarify), or an honest no-evidence note (insufficient). Drives whether
+// the confidence chip shows at all (see ChatAssistant.tsx).
+type Mode = 'grounded' | 'data' | 'clarify' | 'insufficient';
 
 interface AssistantScope {
   state?: string;
@@ -74,6 +79,7 @@ interface AssistantResponse {
   citations: Citation[];
   uncertainty: Uncertainty;
   suggestedActions: SuggestedAction[];
+  mode: Mode;
 }
 
 // ---------------------------------------------------------------------------
@@ -106,7 +112,7 @@ const clamp01 = (n: number): number => (n < 0 ? 0 : n > 1 ? 1 : n);
 // Request parsing (defensive; the body is untrusted JSON).
 // ---------------------------------------------------------------------------
 
-const PERSONAS: readonly Persona[] = ['patient', 'clinician', 'hospital'];
+const PERSONAS: readonly Persona[] = ['patient', 'clinician', 'hospital', 'planner'];
 
 interface AssistantRequest {
   persona: Persona;
@@ -307,6 +313,10 @@ const PERSONA_BRIEF: Record<Persona, string> = {
   hospital:
     'You advise a HOSPITAL administrator on coverage gaps and recruiting — which ' +
     'facilities exist nearby, what they cover, and where openings make sense.',
+  planner:
+    'You advise a MEDICAL PLANNER about data readiness — which facility records ' +
+    'are incomplete, low-confidence, or gap-ridden and must be fixed before the ' +
+    'data can be trusted for planning.',
 };
 
 /** Compact evidence block: one entry per retrieved facility, only citeable fields. */
@@ -617,6 +627,7 @@ const ALLOWED_ACTIONS: Record<Persona, readonly ActionType[]> = {
   patient: ['shortlist'],
   clinician: ['shortlist', 'refer'],
   hospital: ['shortlist', 'post_opening'],
+  planner: ['shortlist'],
 };
 
 function buildActionPayload(
@@ -690,6 +701,189 @@ function defaultLabel(type: ActionType, cand: Candidate): string {
 }
 
 // ---------------------------------------------------------------------------
+// 6. CLARIFY / INSUFFICIENT — when a query is under-specified or unsupported,
+//    ask for the missing context (persona-tuned) instead of a flat refusal, and
+//    render NO scary confidence chip (mode drives the client). §AI_GROUNDING 4.
+// ---------------------------------------------------------------------------
+
+const CLARIFY: Record<Persona, string> = {
+  patient:
+    "To point you to the right care I need two things: (1) the city or area you're near, and " +
+    '(2) the main symptom or the kind of specialist you need — e.g. "pediatrician in Pune" or ' +
+    '"dialysis near Jaipur". What are they?',
+  clinician:
+    'Tell me your discipline plus a state or district and I\'ll show where it\'s needed most or ' +
+    'which facilities you could refer to — e.g. "cardiology coverage in Bihar".',
+  hospital:
+    "Tell me your city or district and the discipline you're weighing, and I'll look at nearby " +
+    'coverage and gaps — e.g. "trauma coverage near Patna".',
+  planner:
+    'I can rank facility records straight from the readiness layer — by data completeness, by data ' +
+    'confidence, or by number of gaps. Try "top 10 facilities with the most missing data", ' +
+    '"lowest data-quality facilities", or "which facilities have the most gaps?".',
+};
+
+function clarifyResponse(persona: Persona): AssistantResponse {
+  return {
+    answer: CLARIFY[persona],
+    citations: [],
+    uncertainty: { score: 0, band: 'low', caveats: [] },
+    suggestedActions: [],
+    mode: 'clarify',
+  };
+}
+
+function insufficientResponse(): AssistantResponse {
+  return {
+    answer:
+      "I don't have source text in the registry that directly answers that. Try naming a city plus " +
+      'the specialty or condition you need — e.g. "cardiology in Pune".',
+    citations: [],
+    uncertainty: { score: 0, band: 'low', caveats: [] },
+    suggestedActions: [],
+    mode: 'insufficient',
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 7. PLANNER DATA LENS — answer ranked data-readiness questions DIRECTLY from
+//    readiness.data_readiness / readiness_gap_items (exact values, not the FM).
+//    This is genuinely grounded: every number is a real column, so the answer
+//    cannot hallucinate. Detect the metric + N, run a bounded ranked query,
+//    format a list. Returns null if the message isn't a recognized data query.
+// ---------------------------------------------------------------------------
+
+type Metric = 'completeness' | 'confidence' | 'gaps';
+
+interface ReadinessRankRow {
+  facility_name: string | null;
+  state: string | null;
+  district: string | null;
+  completeness_score: number | string | null;
+  data_confidence: number | string | null;
+  primary_gap_type: string | null;
+  n_gaps: number | string | null;
+}
+
+const RANK_WORDS = /\b(top|bottom|lowest|highest|worst|best|most|least|fewest|rank|ranked|list|show)\b/;
+
+/** Pull the metric + count from a planner data question, or null if not one. */
+function detectReadinessIntent(message: string): { metric: Metric; n: number } | null {
+  const m = message.toLowerCase();
+  const dataish =
+    RANK_WORDS.test(m) ||
+    /missing data|data quality|data confidence|completeness|incomplete|sparse|gaps?\b/.test(m);
+  if (!dataish) return null;
+
+  let metric: Metric | null = null;
+  if (/gaps?\b|issues?\b|problems?\b/.test(m)) metric = 'gaps';
+  else if (/data quality|data confidence|confidence|quality|scored|score\b|trust/.test(m)) metric = 'confidence';
+  else if (/missing data|incomplete|completeness|complete\b|sparse|empty/.test(m)) metric = 'completeness';
+  else if (RANK_WORDS.test(m)) metric = 'completeness'; // bare "worst/lowest hospitals"
+  if (!metric) return null;
+
+  const numMatch = /\b(\d{1,3})\b/.exec(m);
+  let n = numMatch ? Number(numMatch[1]) : 10;
+  if (!Number.isFinite(n) || n <= 0) n = 10;
+  n = Math.min(n, 25);
+  return { metric, n };
+}
+
+const numOrNull = (v: number | string | null): number | null =>
+  v === null || v === '' ? null : Number(v);
+
+async function tryReadinessData(
+  db: LakebaseClient,
+  message: string,
+): Promise<AssistantResponse | null> {
+  const intent = detectReadinessIntent(message);
+  if (!intent) return null;
+  const { metric, n } = intent;
+
+  let rows: ReadinessRankRow[] = [];
+  try {
+    if (metric === 'gaps') {
+      const r = await db.query<ReadinessRankRow>(
+        `SELECT d.facility_name, d.state, d.district,
+                d.completeness_score, d.data_confidence, d.primary_gap_type,
+                count(g.gap_id)::int AS n_gaps
+           FROM readiness.data_readiness d
+           JOIN readiness.readiness_gap_items g ON g.unique_id = d.unique_id
+          WHERE d.facility_name IS NOT NULL AND btrim(d.facility_name) <> '' AND d.id_valid
+          GROUP BY d.facility_name, d.state, d.district, d.completeness_score,
+                   d.data_confidence, d.primary_gap_type
+          ORDER BY n_gaps DESC, d.completeness_score ASC NULLS FIRST
+          LIMIT $1`,
+        [n],
+      );
+      rows = r.rows;
+    } else {
+      // orderCol is a hardcoded literal selected from the typed `metric` enum
+      // (never user input), so interpolating it into ORDER BY is injection-safe.
+      const orderCol: 'data_confidence' | 'completeness_score' =
+        metric === 'confidence' ? 'data_confidence' : 'completeness_score';
+      const r = await db.query<ReadinessRankRow>(
+        `SELECT facility_name, state, district,
+                completeness_score, data_confidence, primary_gap_type,
+                NULL::int AS n_gaps
+           FROM readiness.data_readiness
+          WHERE facility_name IS NOT NULL AND btrim(facility_name) <> '' AND id_valid
+          ORDER BY ${orderCol} ASC NULLS FIRST, completeness_score ASC NULLS FIRST
+          LIMIT $1`,
+        [n],
+      );
+      rows = r.rows;
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error('[asclepius:assistant] readiness data query failed:', msg);
+    return null; // fall through to the planner clarify
+  }
+  if (rows.length === 0) return null;
+
+  const metricLabel =
+    metric === 'completeness'
+      ? 'most missing data (lowest record completeness)'
+      : metric === 'confidence'
+        ? 'lowest data quality (lowest data-confidence)'
+        : 'the most data-quality gaps';
+
+  const lines = rows.map((row, i) => {
+    const name = str(row.facility_name) || '(unreadable record)';
+    const place = [str(row.district), str(row.state)].filter((x) => x).join(', ');
+    const comp = numOrNull(row.completeness_score);
+    const conf = numOrNull(row.data_confidence);
+    const compStr = comp === null ? '?' : String(Math.round(comp));
+    const confStr = conf === null ? '?' : String(Math.round(conf * 100));
+    const detail =
+      metric === 'gaps'
+        ? `${String(numOrNull(row.n_gaps) ?? 0)} open gaps · ${compStr}/100 complete`
+        : metric === 'confidence'
+          ? `data confidence ${confStr}% · ${compStr}/100 complete`
+          : `${compStr}/100 complete · data confidence ${confStr}%`;
+    const gap = str(row.primary_gap_type);
+    const gapBit = gap && gap !== 'none' ? ` · primary gap: ${gap}` : '';
+    return `${String(i + 1)}. ${name}${place ? ` (${place})` : ''} — ${detail}${gapBit}`;
+  });
+
+  return {
+    answer:
+      `Top ${String(rows.length)} facilities by ${metricLabel}, computed live from the readiness ` +
+      `layer (readiness.data_readiness):\n\n${lines.join('\n')}`,
+    citations: [],
+    uncertainty: {
+      score: 95,
+      band: 'high',
+      caveats: [
+        'Computed directly from the live readiness.data_readiness table — exact values, not model-generated.',
+      ],
+    },
+    suggestedActions: [],
+    mode: 'data',
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Route registration
 // ---------------------------------------------------------------------------
 
@@ -708,6 +902,14 @@ function registerAssistantRoutes(app: express.Application, db: LakebaseClient): 
       }
       const { persona, message, scope, history } = parsed;
 
+      // PLANNER persona — structured readiness-data lens (no facility-text RAG).
+      // Answers ranked data-quality questions DIRECTLY from the readiness layer;
+      // if it isn't a recognized data query, ask what they'd like to rank.
+      if (persona === 'planner') {
+        const data = await tryReadinessData(db, message);
+        return ok(res, data ?? clarifyResponse('planner'));
+      }
+
       // 1. RETRIEVE
       const terms = tokenize(message);
       let cands: Candidate[] = [];
@@ -720,17 +922,10 @@ function registerAssistantRoutes(app: express.Application, db: LakebaseClient): 
 
       const byId = new Map<string, Candidate>(cands.map((c) => [c.id, c]));
 
-      // No evidence at all -> honest INSUFFICIENT_EVIDENCE (no FM call).
+      // No evidence at all -> ask for the missing context (persona-tuned) rather
+      // than a flat refusal. No FM call, no scary confidence chip.
       if (cands.length === 0) {
-        const body: AssistantResponse = {
-          answer:
-            'I could not find any facilities in the registry matching that request. ' +
-            'Try naming a city, specialty, or condition.',
-          citations: [],
-          uncertainty: { score: 0, band: 'low', caveats: [THROTTLE_CAVEAT] },
-          suggestedActions: [],
-        };
-        return ok(res, body);
+        return ok(res, clarifyResponse(persona));
       }
 
       // 2. GROUND + FM CALL
@@ -759,13 +954,7 @@ function registerAssistantRoutes(app: express.Application, db: LakebaseClient): 
 
       const fm = parseFmJson(fmContent);
       if (!fm || typeof fm.answer !== 'string') {
-        const body: AssistantResponse = {
-          answer: 'INSUFFICIENT_EVIDENCE: I could not produce a grounded answer.',
-          citations: [],
-          uncertainty: { score: 0, band: 'low', caveats: [THROTTLE_CAVEAT] },
-          suggestedActions: [],
-        };
-        return ok(res, body);
+        return ok(res, insufficientResponse());
       }
 
       // 3. CITATION GUARD — keep only quotes that literally anchor.
@@ -783,15 +972,14 @@ function registerAssistantRoutes(app: express.Application, db: LakebaseClient): 
         }
       }
 
-      // If the model claimed facts but NOTHING anchored, downgrade the prose to
-      // an explicit insufficient-evidence note (no ungrounded claims surface).
-      const claimedCitations =
-        Array.isArray(fm.citations) && fm.citations.length > 0;
-      let answer = fm.answer.trim();
-      if (claimedCitations && anchored.length === 0) {
-        answer =
-          'INSUFFICIENT_EVIDENCE: I could not verify any of that against the ' +
-          'registry text, so I am not stating it as fact.';
+      // Nothing anchored -> we have no grounded answer. Ask the persona-tailored
+      // clarifying question (city + need) rather than surfacing ungrounded prose
+      // or a flat refusal — this is the "ask for better context" path, and it
+      // shows no confidence chip. (Covers under-specified queries like "I have a
+      // sick child where do I take them" that DO retrieve candidates but cannot
+      // anchor an answer.)
+      if (anchored.length === 0) {
+        return ok(res, clarifyResponse(persona));
       }
 
       // 4. UNCERTAINTY
@@ -801,10 +989,11 @@ function registerAssistantRoutes(app: express.Application, db: LakebaseClient): 
       const suggestedActions = validateActions(fm.suggestedActions, persona, byId);
 
       const body: AssistantResponse = {
-        answer,
+        answer: fm.answer.trim(),
         citations: anchored,
         uncertainty,
         suggestedActions,
+        mode: 'grounded',
       };
       ok(res, body);
     }),
