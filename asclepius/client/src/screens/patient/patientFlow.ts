@@ -22,10 +22,20 @@ import type { TrustState } from '@/components/asclepius';
 // Constants (verbatim from the prototype)
 // ---------------------------------------------------------------------------
 
-/** Origin cities (Maharashtra) the patient can travel from. prototype `ORIGINS`. */
+/**
+ * Origin cities the patient can travel from. Expanded nationwide (was ~10
+ * Maharashtra cities) so the brief's own examples (Jaipur, Patna, Delhi,
+ * Bengaluru) are selectable and the search can be scoped to the origin's state.
+ * Every member MUST have a CITY_LL coord and SHOULD have an ORIGIN_STATE entry.
+ */
 export const ORIGINS = [
+  // Maharashtra (kept from the prototype)
   'Pune', 'Mumbai', 'Thane', 'Nashik', 'Aurangabad',
   'Solapur', 'Kolhapur', 'Sangli', 'Latur', 'Nagpur',
+  // Nationwide
+  'Delhi', 'Jaipur', 'Patna', 'Bengaluru', 'Hyderabad',
+  'Chennai', 'Kolkata', 'Ahmedabad', 'Lucknow', 'Bhopal',
+  'Indore', 'Surat',
 ] as const;
 
 export const DEFAULT_ORIGIN = 'Pune';
@@ -68,11 +78,33 @@ export const URGENCIES: UrgencyDef[] = [
 ];
 export const DEFAULT_URGENCY = 'soon';
 
-/** City lat/lng for haversine distance. prototype `CITY_LL`. */
+/** City lat/lng for haversine distance. prototype `CITY_LL`, extended nationwide. */
 export const CITY_LL: Record<string, [number, number]> = {
+  // Maharashtra
   Pune: [18.52, 73.86], Mumbai: [19.07, 72.87], Thane: [19.22, 72.97], Nashik: [20.0, 73.79],
   Nagpur: [21.15, 79.09], Aurangabad: [19.88, 75.34], Solapur: [17.66, 75.91],
   Kolhapur: [16.7, 74.24], Sangli: [16.85, 74.58], Latur: [18.41, 76.58],
+  // Nationwide
+  Delhi: [28.61, 77.21], Jaipur: [26.91, 75.79], Patna: [25.59, 85.14], Bengaluru: [12.97, 77.59],
+  Hyderabad: [17.39, 78.49], Chennai: [13.08, 80.27], Kolkata: [22.57, 88.36], Ahmedabad: [23.03, 72.59],
+  Lucknow: [26.85, 80.95], Bhopal: [23.26, 77.41], Indore: [22.72, 75.86], Surat: [21.17, 72.83],
+};
+
+/**
+ * Origin city → its app_read.facilities `state` spelling. Used to scope the
+ * facilities search to the patient's own state. The server matches case-
+ * insensitively (UPPER(state)=UPPER($1)), so minor casing drift is tolerated;
+ * an origin absent here safely falls back to an unscoped (nationwide) search.
+ */
+export const ORIGIN_STATE: Record<string, string> = {
+  // Maharashtra
+  Pune: 'Maharashtra', Mumbai: 'Maharashtra', Thane: 'Maharashtra', Nashik: 'Maharashtra',
+  Nagpur: 'Maharashtra', Aurangabad: 'Maharashtra', Solapur: 'Maharashtra',
+  Kolhapur: 'Maharashtra', Sangli: 'Maharashtra', Latur: 'Maharashtra',
+  // Nationwide
+  Delhi: 'Delhi', Jaipur: 'Rajasthan', Patna: 'Bihar', Bengaluru: 'Karnataka',
+  Hyderabad: 'Telangana', Chennai: 'Tamil Nadu', Kolkata: 'West Bengal', Ahmedabad: 'Gujarat',
+  Lucknow: 'Uttar Pradesh', Bhopal: 'Madhya Pradesh', Indore: 'Madhya Pradesh', Surat: 'Gujarat',
 };
 
 // ---------------------------------------------------------------------------
@@ -90,22 +122,42 @@ export function haversine(la1: number, lo1: number, la2: number, lo2: number): n
 }
 
 /**
- * Distance from the patient's origin to a facility, in km.
- * Prefers the facility's own lat/lng; falls back to its city centroid; finally
- * to a deterministic pseudo-distance so every row still ranks (prototype
- * `distOf` had an analogous grid fallback when coords were missing).
+ * Distance from the patient's origin to a facility, with a flag for whether it
+ * is a *real* measured distance or an *approximate* placeholder.
+ *
+ * `approx` is true when we lack the inputs for a real haversine measurement
+ * (no known origin centroid, or the facility has neither its own lat/lng nor a
+ * CITY_LL-known city). In that case `dist` is a deterministic pseudo-distance
+ * used only as a stable sort tiebreaker — it MUST NEVER be displayed as a
+ * precise km nor used to hard-exclude a result (see Task #4). When `approx` is
+ * false, `dist` is the rounded great-circle distance and is safe to display.
  */
-export function distanceOf(origin: string, f: ApiFacilityRow): number {
+export interface DistanceInfo {
+  dist: number;
+  approx: boolean;
+}
+export function distanceInfo(origin: string, f: ApiFacilityRow): DistanceInfo {
   const oll = CITY_LL[origin];
   const fll: [number, number] | undefined =
     f.lat != null && f.lng != null
       ? [f.lat, f.lng]
       : (f.city && CITY_LL[f.city]) || undefined;
-  if (oll && fll) return haversine(oll[0], oll[1], fll[0], fll[1]);
-  // Deterministic fallback so rows lacking coords still get a stable distance.
+  if (oll && fll) return { dist: haversine(oll[0], oll[1], fll[0], fll[1]), approx: false };
+  // Deterministic pseudo-distance so coordless rows still get a stable sort
+  // order — flagged approximate so it is never shown or used as a hard cutoff.
   let h = 0;
   for (let i = 0; i < f.id.length; i++) h = (h * 31 + f.id.charCodeAt(i)) >>> 0;
-  return 40 + (h % 560);
+  return { dist: 40 + (h % 560), approx: true };
+}
+
+/**
+ * Distance from the patient's origin to a facility, in km. Prefers the
+ * facility's own lat/lng, then its city centroid. Retained for callers that
+ * only need a number; prefer {@link distanceInfo} when honesty about whether
+ * the value is measured matters (it usually does — see Task #4).
+ */
+export function distanceOf(origin: string, f: ApiFacilityRow): number {
+  return distanceInfo(origin, f).dist;
 }
 
 // ---------------------------------------------------------------------------
@@ -127,8 +179,14 @@ export function trustScore(t: TrustState): number {
 
 export interface ScoredFacility {
   f: ApiFacilityRow;
-  /** km from origin. */
+  /** km from origin. Only meaningful as a precise figure when !distApprox. */
   dist: number;
+  /**
+   * True when `dist` is an approximate placeholder (no real coords for either
+   * endpoint). Such rows are never excluded by the radius cutoff, never have
+   * their fabricated distance shown as a precise km, and contribute 0 proximity.
+   */
+  distApprox: boolean;
   /** disciplines the facility offers that the patient asked for. */
   matched: string[];
   /** whether at least one need is matched. */
@@ -150,21 +208,28 @@ export function scoreFacility(
   origin: string,
   radius: number,
 ): ScoredFacility {
-  const dist = distanceOf(origin, f);
+  const { dist, approx } = distanceInfo(origin, f);
   const specs = f.specialties ?? [];
   const matched = needSpecs.filter((sp) => specs.includes(sp));
   const hasNeeds = needSpecs.length > 0;
   const coverFrac = hasNeeds ? matched.length / needSpecs.length : 0;
-  const prox = Math.max(0, 1 - dist / radius);
+  // A fabricated (approximate) distance must never inflate fit, so its
+  // proximity term is 0 rather than derived from the placeholder number.
+  const prox = approx ? 0 : Math.max(0, 1 - dist / radius);
   const t = normalizeTrust(f.trust);
   let fit = Math.round(
     (hasNeeds ? 14 + coverFrac * 48 : 42) + trustScore(t) * 24 + prox * 16,
   );
   fit = Math.max(22, Math.min(98, fit));
-  return { f, dist, matched, serviceMatch: matched.length > 0, fit };
+  return { f, dist, distApprox: approx, matched, serviceMatch: matched.length > 0, fit };
 }
 
-/** Rank facilities within radius by fit (desc), then distance (asc). */
+/**
+ * Rank facilities by fit (desc), then distance (asc). The radius is a HARD
+ * cutoff only for rows with a *real* measured distance — rows whose distance is
+ * approximate (no coords) are retained rather than silently dropped by a
+ * fabricated number, and are ordered after all measured rows (see Task #4).
+ */
 export function rankFacilities(
   facilities: ApiFacilityRow[],
   needSpecs: string[],
@@ -173,8 +238,14 @@ export function rankFacilities(
 ): ScoredFacility[] {
   return facilities
     .map((f) => scoreFacility(f, needSpecs, origin, radius))
-    .filter((s) => s.dist <= radius)
-    .sort((a, b) => b.fit - a.fit || a.dist - b.dist);
+    .filter((s) => s.distApprox || s.dist <= radius)
+    .sort((a, b) =>
+      a.distApprox === b.distApprox
+        ? b.fit - a.fit || a.dist - b.dist
+        : a.distApprox
+          ? 1
+          : -1,
+    );
 }
 
 /**
@@ -188,7 +259,9 @@ export function fitBreakdown(
   radius: number,
 ): FitReason[] {
   const hasNeeds = needSpecs.length > 0;
-  const prox = Math.max(0, 1 - s.dist / radius);
+  // Approximate (placeholder) distance contributes no proximity points and is
+  // never shown as a precise km — mirror scoreFacility's prox=0 for approx rows.
+  const prox = s.distApprox ? 0 : Math.max(0, 1 - s.dist / radius);
   const needPts = hasNeeds
     ? Math.round(14 + (s.matched.length / needSpecs.length) * 48)
     : 42;
@@ -215,7 +288,9 @@ export function fitBreakdown(
       src: 'trust + confidence',
     },
     {
-      label: `Proximity — ${s.dist} km from ${origin}`,
+      label: s.distApprox
+        ? 'Proximity — distance approximate (no precise coordinates)'
+        : `Proximity — ${s.dist} km from ${origin}`,
       pts: proxPts,
       src: 'location',
     },
@@ -239,12 +314,58 @@ export function reasonChips(s: ScoredFacility, needSpecs: string[], origin: stri
   } else if (hasNeeds) {
     chips.push({ text: 'No matching service listed' });
   }
-  chips.push({ text: `${s.dist} km from ${origin}` });
+  // Never present a fabricated km as a measured fact — label it approximate.
+  chips.push({ text: s.distApprox ? 'Distance approximate' : `${s.dist} km from ${origin}` });
   // The record-confidence chip is intentionally omitted for patients: the card's
   // data-quality signal is the neutral "X out of 100 data points have information"
   // pill (see completenessOf + FacilityCard), so a separate "% record confidence"
   // chip would be redundant and contradict it.
   return chips.slice(0, 3);
+}
+
+// ---------------------------------------------------------------------------
+// Verbatim evidence quote — the cited facility text backing a result card
+// ---------------------------------------------------------------------------
+
+/** A verbatim cited quote + its attribution, for the result-card EvidenceQuote. */
+export interface EvidenceQuotePick {
+  text: string;
+  source: string;
+}
+
+/** Cap a verbatim quote without paraphrasing: keep the exact prefix + ellipsis. */
+function clipVerbatim(text: string, max = 180): string {
+  const t = text.trim();
+  return t.length > max ? `${t.slice(0, max).trimEnd()}…` : t;
+}
+
+/**
+ * Pick the verbatim facility text that best backs this match, for an inline
+ * EvidenceQuote on the result card. Preference order (never fabricate):
+ *   1. a claims[] entry whose text mentions a matched discipline (case-insensitive)
+ *   2. the facility free-text description (FacilityRow.evidence)
+ *   3. nothing — return undefined so the card renders no quote rather than invent one.
+ * The returned text is the exact source words (only length-clipped with an
+ * ellipsis), never a paraphrase.
+ */
+export function pickEvidenceQuote(
+  f: ApiFacilityRow,
+  matched: string[],
+): EvidenceQuotePick | undefined {
+  const claims = f.claims ?? [];
+  const lowerMatched = matched.map((m) => m.toLowerCase());
+  const claimHit = claims.find((c) => {
+    const tx = (c.text ?? '').toLowerCase();
+    return !!tx && lowerMatched.some((m) => tx.includes(m));
+  });
+  if (claimHit && claimHit.text.trim()) {
+    return { text: clipVerbatim(claimHit.text), source: 'Claimed capability (FDR)' };
+  }
+  const ev = (f.evidence ?? '').trim();
+  if (ev) {
+    return { text: clipVerbatim(ev), source: 'Facility free-text description (FDR field: description)' };
+  }
+  return undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -328,6 +449,13 @@ export interface PatientFlowState {
   needSpecs: string[];
   /** human labels for the selected needs (for the results subheading). */
   needLabels: string[];
+  /**
+   * The origin's app_read.facilities `state` spelling, for scoping the search.
+   * `undefined` when the origin has no ORIGIN_STATE mapping — callers should
+   * then omit `state` (fall back to an unscoped, nationwide search) so an
+   * unmapped city never returns zero facilities.
+   */
+  originState: string | undefined;
 }
 
 function clampRadius(n: number): number {
@@ -395,7 +523,8 @@ export function usePatientFlow() {
     [needs, patch],
   );
 
-  const state: PatientFlowState = { origin, radius, needs, urgency, needSpecs, needLabels };
+  const originState = ORIGIN_STATE[origin];
+  const state: PatientFlowState = { origin, radius, needs, urgency, needSpecs, needLabels, originState };
   return { ...state, setOrigin, setRadius, setUrgency, toggleNeed, patch };
 }
 

@@ -20,6 +20,7 @@ import {
   rankFacilities,
   fitBreakdown,
   reasonChips,
+  pickEvidenceQuote,
   toCardRow,
   completenessOf,
   normalizeTrust,
@@ -38,9 +39,12 @@ const FETCH_LIMIT = 400;
 export default function PatientResults() {
   const navigate = useNavigate();
   const flow = usePatientFlow();
-  const { origin, radius, needSpecs, needLabels, setRadius } = flow;
+  const { origin, radius, needSpecs, needLabels, originState, setRadius } = flow;
 
-  const { data, loading, error, refetch } = useSearchFacilities({ limit: FETCH_LIMIT });
+  // Scope the fetch to the origin's state when known (case-insensitive on the
+  // server); omit `state` for unmapped origins so we never return zero. Still
+  // rank client-side so multi-need coverage works across the scoped set.
+  const { data, loading, error, refetch } = useSearchFacilities({ limit: FETCH_LIMIT, state: originState });
   const { data: shortlist } = useShortlist();
 
   // Optimistic shortlist set (server is the source of truth; we toggle locally
@@ -197,6 +201,7 @@ export default function PatientResults() {
             !error &&
             scored.map((s) => {
               const card = toCardRow(s.f);
+              const evidence = pickEvidenceQuote(s.f, s.matched);
               return (
                 <div key={s.f.id} className="flex flex-col">
                   <FacilityCard
@@ -208,6 +213,7 @@ export default function PatientResults() {
                     whyOpen={whyOpenId === s.f.id}
                     onToggleWhy={() => setWhyOpenId((cur) => (cur === s.f.id ? null : s.f.id))}
                     reasons={reasonChips(s, needSpecs, origin)}
+                    evidence={evidence}
                     saved={savedIds.has(s.f.id)}
                     onSave={() => void toggleSave(s.f)}
                     onOpen={() => void navigate(`/facility/${encodeURIComponent(s.f.id)}`)}

@@ -1,15 +1,17 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
-import { Button, Skeleton } from '@databricks/appkit-ui/react';
+import { Button, Skeleton, Textarea } from '@databricks/appkit-ui/react';
 import {
   ArrowLeft,
   ArrowRight,
   ArrowSquareOut,
+  BookmarkSimple,
   Buildings,
   CaretDown,
   CaretRight,
   Compass,
   Crosshair,
+  FloppyDisk,
   Info,
   LinkSimple,
   MapPin,
@@ -26,6 +28,9 @@ import {
   useMedicalDeserts,
   useDesertCapabilities,
   useDesertSpecialties,
+  usePlannerPriorities,
+  savePlannerPriority,
+  removePlannerPriority,
   type DesertSort,
   type MedicalScarcityRow,
   type CapabilityDesertRow,
@@ -80,6 +85,12 @@ const CONF_STYLE: Record<string, { fg: string; bg: string; label: string }> = {
 };
 function confStyle(c: string | null | undefined): { fg: string; bg: string; label: string } {
   return CONF_STYLE[(c ?? '').toLowerCase()] ?? CONF_STYLE.medium;
+}
+
+/** True when readiness flags the district as data-poor / unknown-supply (0 mapped
+ *  facilities — a data gap, NOT proven absence). Drives the amber district badge. */
+function isUnknownSupply(d: { coverage_flag: string | null; supply_label: string | null }): boolean {
+  return d.coverage_flag === 'insufficient_supply_data' || d.supply_label === 'unknown_supply';
 }
 
 // care_tier → short label + tint for the specialty rows.
@@ -173,6 +184,8 @@ export function MedicalDesertPlanner() {
   const capabilities = useDesertCapabilities(selected?.district_id);
   // Specialty drill is scoped to the selected capability (undefined = all).
   const specialties = useDesertSpecialties(selected?.district_id, capability ?? undefined);
+  // Saved deploy-priority districts (owner-scoped) — reloaded on mount so saves persist.
+  const priorities = usePlannerPriorities();
 
   const byScarcity = sort === 'scarcity';
   const accent = byScarcity ? SCARCITY : BURDEN;
@@ -182,9 +195,36 @@ export function MedicalDesertPlanner() {
   // The ranked list is already sorted by the server; keep that order.
   const rows = useMemo(() => districts.data ?? [], [districts.data]);
 
+  // O(1) lookups for "is this district saved" + the saved note text (by district_id).
+  const savedIds = useMemo(
+    () => new Set((priorities.data ?? []).map((p) => p.district_id)),
+    [priorities.data],
+  );
+  const savedNotes = useMemo(
+    () => new Map((priorities.data ?? []).map((p) => [p.district_id, p.note ?? ''] as const)),
+    [priorities.data],
+  );
+
   const onPickDistrict = (d: MedicalScarcityRow) => {
     setSelected(d);
     setCapability(null);
+  };
+
+  // Save / un-save a district as a deploy priority + persist a one-line note.
+  // POST always upserts (save + edit note); DELETE un-saves. refetch() after each.
+  const onSavePriority = async (d: MedicalScarcityRow, note: string): Promise<void> => {
+    await savePlannerPriority({
+      district_id: d.district_id,
+      district: d.district,
+      state: d.state,
+      lens: byScarcity ? 'scarcity' : 'burden',
+      note,
+    });
+    priorities.refetch();
+  };
+  const onUnsavePriority = async (d: MedicalScarcityRow): Promise<void> => {
+    await removePlannerPriority(d.district_id);
+    priorities.refetch();
   };
 
   return (
@@ -369,10 +409,25 @@ export function MedicalDesertPlanner() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span
-                        className="block truncate"
+                        className="flex items-center gap-1.5 truncate"
                         style={{ fontFamily: fonts.body, fontWeight: 700, fontSize: 14, color: neutral.ink }}
                       >
-                        {d.district}
+                        {savedIds.has(d.district_id) && (
+                          <BookmarkSimple
+                            weight="fill"
+                            size={13}
+                            style={{ color: BURDEN, flexShrink: 0 }}
+                            aria-label="Saved deploy priority"
+                          />
+                        )}
+                        <span className="truncate">{d.district}</span>
+                        {isUnknownSupply(d) && (
+                          <span
+                            className="inline-block h-[7px] w-[7px] shrink-0 rounded-full"
+                            style={{ background: semantic.warn }}
+                            title="Unknown supply — data-poor (0 mapped facilities)"
+                          />
+                        )}
                       </span>
                       <span
                         className="block truncate"
@@ -433,6 +488,10 @@ export function MedicalDesertPlanner() {
               activeCapability={capability}
               onPickCapability={setCapability}
               accent={accent}
+              isSaved={savedIds.has(selected.district_id)}
+              savedNote={savedNotes.get(selected.district_id) ?? ''}
+              onSavePriority={onSavePriority}
+              onUnsavePriority={onUnsavePriority}
             />
           )}
         </div>
@@ -482,6 +541,10 @@ function DistrictDetail({
   activeCapability,
   onPickCapability,
   accent,
+  isSaved,
+  savedNote,
+  onSavePriority,
+  onUnsavePriority,
 }: {
   district: MedicalScarcityRow;
   capabilities: CapabilityDesertRow[];
@@ -493,6 +556,10 @@ function DistrictDetail({
   activeCapability: string | null;
   onPickCapability: (c: string | null) => void;
   accent: string;
+  isSaved: boolean;
+  savedNote: string;
+  onSavePriority: (d: MedicalScarcityRow, note: string) => Promise<void>;
+  onUnsavePriority: (d: MedicalScarcityRow) => Promise<void>;
 }) {
   const ts = tierStyle(district.scarcity_tier);
   const worst = [
@@ -533,6 +600,16 @@ function DistrictDetail({
             >
               {district.district}
             </h3>
+            {isUnknownSupply(district) && (
+              <span className="mt-2 inline-flex">
+                <Chip fg={semantic.warn} bg={semantic.warnBg}>
+                  <WarningDiamond weight="fill" size={11} />
+                  <span title="0 facilities mapped to this district — a data gap, not proven absence. The naive supply map mistakes these for deserts.">
+                    Unknown supply — data-poor
+                  </span>
+                </Chip>
+              </span>
+            )}
           </div>
           {/* the X of 32 badge — the track's headline metric */}
           <div
@@ -584,6 +661,18 @@ function DistrictDetail({
             ))}
           </div>
         )}
+
+        {/* save this district as a deploy priority + a one-line note (persists).
+            Keyed on the saved record so it remounts (re-seeding its local mirror)
+            when the district changes OR usePlannerPriorities resolves on mount. */}
+        <SavePriority
+          key={`${district.district_id}::${String(isSaved)}::${savedNote}`}
+          district={district}
+          isSaved={isSaved}
+          savedNote={savedNote}
+          onSave={onSavePriority}
+          onUnsave={onUnsavePriority}
+        />
       </div>
 
       {/* capability gaps */}
@@ -730,6 +819,134 @@ function DistrictDetail({
 }
 
 /* ===========================================================================
+   Save-priority — mark this district as a deploy priority + attach a one-line
+   note, owner-scoped and persisted server-side (app.planner_priorities). Mirrors
+   FacilityDetail's Save/note UX: optimistic local mirror, await the write, then
+   the parent refetch()es so the saved state is restored on return.
+   =========================================================================== */
+function SavePriority({
+  district,
+  isSaved,
+  savedNote,
+  onSave,
+  onUnsave,
+}: {
+  district: MedicalScarcityRow;
+  isSaved: boolean;
+  savedNote: string;
+  onSave: (d: MedicalScarcityRow, note: string) => Promise<void>;
+  onUnsave: (d: MedicalScarcityRow) => Promise<void>;
+}) {
+  // Local mirrors so the save/note state stays responsive while the write is in
+  // flight. The parent keys this component on the persisted record, so it remounts
+  // (re-seeding these from props) when the district changes or the saved priorities
+  // resolve on mount — no derived-state-during-render needed.
+  const [saved, setSaved] = useState(isSaved);
+  const [note, setNote] = useState(savedNote);
+  const [pending, setPending] = useState(false);
+  const [noteSaved, setNoteSaved] = useState(false);
+
+  const toggleSave = async (): Promise<void> => {
+    if (pending) return;
+    setPending(true);
+    const next = !saved;
+    setSaved(next); // optimistic
+    try {
+      if (next) {
+        await onSave(district, note);
+        setNoteSaved(true);
+      } else {
+        await onUnsave(district);
+        setNoteSaved(false);
+      }
+    } catch {
+      setSaved(!next); // revert
+    } finally {
+      setPending(false);
+    }
+  };
+
+  // Persist note edits (only once the district is already a saved priority) on blur.
+  const saveNote = async (): Promise<void> => {
+    if (!saved || pending) return;
+    setPending(true);
+    try {
+      await onSave(district, note);
+      setNoteSaved(true);
+    } catch {
+      /* keep the optimistic note; the upsert is idempotent on retry */
+    } finally {
+      setPending(false);
+    }
+  };
+
+  return (
+    <div className="mt-4 border-t pt-3.5" style={{ borderColor: neutral.divider }}>
+      <Button
+        type="button"
+        onClick={() => {
+          void toggleSave();
+        }}
+        disabled={pending}
+        className="w-full font-bold"
+        style={
+          saved
+            ? {
+                background: roleTheme.hospital.tint,
+                color: roleTheme.hospital.press,
+                border: `1px solid ${roleTheme.hospital.border}`,
+                height: 44,
+                fontSize: 14,
+              }
+            : {
+                background: BURDEN,
+                color: '#fff',
+                border: 'none',
+                height: 44,
+                fontSize: 14,
+              }
+        }
+      >
+        <BookmarkSimple weight={saved ? 'fill' : 'bold'} size={17} />
+        {saved ? 'Saved as a deploy priority' : 'Save as a deploy priority'}
+      </Button>
+
+      <div
+        className="mt-2.5 flex items-center gap-1.5 px-1"
+        style={{ fontFamily: fonts.body, fontWeight: 600, fontSize: 12, color: neutral.text }}
+      >
+        <BookmarkSimple weight="fill" size={13} style={{ color: BURDEN }} />
+        Priority note
+      </div>
+      <Textarea
+        value={note}
+        onChange={(e) => {
+          setNote(e.target.value);
+          setNoteSaved(false);
+        }}
+        onBlur={() => {
+          void saveNote();
+        }}
+        placeholder="e.g. Deploy a mobile cardiology unit Q3 — partner with the district hospital."
+        className="mt-2 w-full"
+        style={{ minHeight: 64, resize: 'vertical', borderColor: neutral.border, fontSize: 13.5, color: neutral.text }}
+      />
+      <div
+        className="mt-1.5 flex items-center gap-1.5 px-1"
+        style={{ fontFamily: fonts.body, fontSize: 11.5, color: neutral.textDisabled }}
+      >
+        <FloppyDisk size={13} />
+        {saved
+          ? noteSaved
+            ? 'Priority & note saved to your account.'
+            : 'Note saves to your account when you click away.'
+          : 'Save this district to attach a priority note.'}
+      </div>
+    </div>
+  );
+}
+
+/* ===========================================================================
    Specialty row — the metric line plus a collapsible Evidence / citation panel
    that clicks through to the nearest CLAIMING provider, its claimed text, and
    the facility-reported (untrusted) source. Each row owns its own open state so
@@ -740,6 +957,12 @@ function SpecialtyRow({ s, showCapability }: { s: SpecialtyDesertRow; showCapabi
   const cs = confStyle(s.coverage_confidence);
   const ct = careTierTag(s.care_tier);
   const sv = tierStyle(s.severity_tier);
+  // Data-poor / thin-coverage signal at the SERVICE grain: very few facilities
+  // claim this service nationwide, or distance is only medium-confidence. This is
+  // the honest-coverage analogue of the district 'unknown supply' badge.
+  const thinCoverage =
+    !s.no_provider_nationwide &&
+    (s.n_facilities_claiming <= 2 || (s.coverage_confidence ?? '').toLowerCase() === 'medium');
 
   return (
     <div
@@ -767,6 +990,12 @@ function SpecialtyRow({ s, showCapability }: { s: SpecialtyDesertRow; showCapabi
             <Chip fg={cs.fg} bg={cs.bg}>
               {cs.label}
             </Chip>
+            {thinCoverage && (
+              <Chip fg={semantic.warn} bg={semantic.warnBg}>
+                <WarningDiamond weight="fill" size={11} />
+                {s.n_facilities_claiming <= 2 ? `Only ${s.n_facilities_claiming} claim this` : 'Thin coverage'}
+              </Chip>
+            )}
             {showCapability && (
               <span style={{ fontFamily: fonts.body, fontSize: 11, color: neutral.textFaint2 }}>{s.capability}</span>
             )}
@@ -781,8 +1010,16 @@ function SpecialtyRow({ s, showCapability }: { s: SpecialtyDesertRow; showCapabi
             <MapPin weight="fill" size={13} />
             {s.no_provider_nationwide ? 'none' : fmtKm(s.nearest_km)}
           </span>
-          <span style={{ fontFamily: fonts.body, fontSize: 10.5, color: neutral.textFaint2 }}>
-            sev {s.severity.toFixed(2)}
+          <span
+            className="inline-flex items-center gap-1"
+            style={{
+              fontFamily: fonts.body,
+              fontSize: 10.5,
+              color: thinCoverage ? semantic.warn : neutral.textFaint2,
+            }}
+            title="Facilities nationwide that claim this service (claims, not credential-verified)"
+          >
+            sev {s.severity.toFixed(2)} · {s.n_facilities_claiming} claim
           </span>
         </span>
         <span
@@ -821,8 +1058,8 @@ function EvidencePanel({ s }: { s: SpecialtyDesertRow }) {
         >
           <Prohibit weight="fill" size={16} style={{ color: neutral.textFaint, marginTop: 1, flexShrink: 0 }} />
           <span style={{ fontFamily: fonts.body, fontSize: 12.5, color: neutral.textMuted, lineHeight: 1.5 }}>
-            No provider claims <strong>{s.specialty}</strong> anywhere in the dataset — there is no nearest facility to
-            cite. This is the worst possible access gap for the service.
+            <strong>0 facilities</strong> claim <strong>{s.specialty}</strong> anywhere in the dataset — there is no
+            nearest facility to cite. This is the worst possible access gap for the service.
           </span>
         </div>
       </div>
@@ -845,6 +1082,17 @@ function EvidencePanel({ s }: { s: SpecialtyDesertRow }) {
           <strong style={{ color: neutral.ink }}>{facility}</strong>
           {city ? `, ${city}` : ''}{' '}
           <span style={{ color: neutral.textFaint2 }}>({fmtKm(s.nearest_km)} away)</span>
+        </span>
+      </div>
+
+      {/* gap-derivation line — WHY this service is a desert, from the closest of N
+          nationwide claiming facilities + the distance to it. */}
+      <div className="flex items-start gap-2">
+        <MapPin weight="fill" size={16} style={{ color: neutral.textFaint2, marginTop: 1, flexShrink: 0 }} />
+        <span style={{ fontFamily: fonts.body, fontSize: 12, color: neutral.textFaint2, lineHeight: 1.5 }}>
+          Why it&rsquo;s a gap: the nearest of <strong style={{ color: neutral.textMuted }}>{s.n_facilities_claiming}</strong>{' '}
+          {s.n_facilities_claiming === 1 ? 'facility' : 'facilities'} claiming {s.specialty} nationwide is{' '}
+          {fmtKm(s.nearest_km)} away.
         </span>
       </div>
 

@@ -7,6 +7,7 @@ import { FacilityAvatar } from './FacilityAvatar';
 import { TrustBadge } from './TrustBadge';
 import { DisciplineChips } from './DisciplineChips';
 import { FitScoreBar } from './FitScoreBar';
+import { EvidenceQuote } from './EvidenceQuote';
 
 export interface FacilityCardReason {
   /** A short "why this surfaced" reason chip. */
@@ -20,6 +21,13 @@ export interface FacilityCardProps {
   role: Role;
   /** "Why this surfaced" reason chips. */
   reasons?: FacilityCardReason[];
+  /**
+   * Verbatim cited facility text backing the match (a claim or the FDR
+   * description). When present, an EvidenceQuote renders after the reason chips
+   * so the patient sees the actual words, not just a computed score. Never
+   * fabricated by the card — the caller passes exact source text or nothing.
+   */
+  evidence?: { text: string; source?: string };
   /**
    * Record completeness 0–100. When provided (patient-facing cards), the card
    * shows a neutral "{n} out of 100 data points have information" pill in place
@@ -57,6 +65,7 @@ export function FacilityCard({
   facility,
   role: r,
   reasons,
+  evidence,
   dataPoints,
   fit,
   whyBreakdown,
@@ -137,6 +146,8 @@ export function FacilityCard({
             ))}
           </div>
         )}
+
+        {evidence && <EvidenceQuote text={evidence.text} sourceLabel={evidence.source} />}
 
         {showFit && <FitScoreBar fit={fit} breakdown={whyBreakdown} open={whyOpen} onToggle={onToggleWhy} />}
 

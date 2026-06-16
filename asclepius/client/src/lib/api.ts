@@ -308,6 +308,13 @@ export interface MedicalScarcityRow {
   worst_capability: string | null;
   second_worst_capability: string | null;
   third_worst_capability: string | null;
+  /** From readiness.gold_district_supply_need (LEFT JOIN on UPPER(state)/
+   *  UPPER(district)). 'insufficient_supply_data' marks a data-poor /
+   *  unknown-supply district (0 mapped facilities — a data gap, not proven
+   *  absence). NULL when the join misses = render no badge. */
+  coverage_flag: string | null;
+  /** Derived badge category ('unknown_supply' | null), mirrors readiness gap_label. */
+  supply_label: string | null;
 }
 
 /** area_capability_desert — one row per (district, care family). */
@@ -457,6 +464,44 @@ export async function facilityNabh(id: string): Promise<FacilityNabhRow | null> 
     if (obj.nabh && typeof obj.nabh === 'object') return obj.nabh as FacilityNabhRow;
   }
   return null;
+}
+
+/**
+ * One server-graded claim for a facility, from trust.facility_trust_card joined
+ * with the facility's NABH authority. `tier` is the trust grade the SERVER
+ * assigns (the citation guard stays server-owned) — the client renders
+ * row.tier directly, never the broken uniform 'review' path.
+ *   verified      — NABH-authority-backed or top trust_tier
+ *   review        — corroborated (corroboration <> 'none')
+ *   claimed       — extracted claim, not yet corroborated
+ *   contradiction — consistency_flag signals a conflict
+ * GET /api/data/facility-claims/:id
+ */
+export type ClaimTier = 'verified' | 'review' | 'claimed' | 'contradiction';
+
+export interface FacilityClaimRow {
+  claimed_specialty: string | null;
+  /** Server-assigned trust grade — render this, not asClaimStatus. */
+  tier: ClaimTier;
+  trust_tier: string | null;
+  corroboration: string | null;
+  consistency_flag: string | null;
+  matched_evidence: string | null;
+  evidence_snippet: string | null;
+  accredited: boolean | null;
+  /** NABH cert PDF for the authority tier (null when not accredited). */
+  cert_url: string | null;
+}
+
+/** Per-claim trust grading for a facility. GET /api/data/facility-claims/:id */
+export async function facilityClaims(id: string): Promise<FacilityClaimRow[]> {
+  const payload = await request<unknown>(`/api/data/facility-claims/${encodeURIComponent(id)}`);
+  // Server envelope is `{ claims: [...] }`.
+  return unwrapRows<FacilityClaimRow>(
+    payload && typeof payload === 'object' && 'claims' in payload
+      ? (payload as { claims: unknown }).claims
+      : payload,
+  );
 }
 
 /** State-level NFHS-5 health. GET /api/data/atlas/state-health */
@@ -674,6 +719,27 @@ export interface Notification {
   text: string;
   read: boolean;
   created_at: string;
+}
+
+/** app.planner_priorities — a saved deploy-priority district + one-line note,
+ *  owner-scoped by (user_email, district_id). district_id is the medical_desert
+ *  key UPPER(state)||'::'||UPPER(district). */
+export interface PlannerPriorityItem {
+  district_id: string;
+  district: string | null;
+  state: string | null;
+  /** 'burden' | 'scarcity' — the lens active when the priority was saved. */
+  lens: string | null;
+  note: string | null;
+  created_at: string;
+}
+
+export interface SavePlannerPriorityInput {
+  district_id: string;
+  district?: string;
+  state?: string;
+  lens?: string;
+  note?: string;
 }
 
 // ===========================================================================
@@ -920,6 +986,30 @@ export async function clearNotifications(): Promise<{ cleared: boolean }> {
   return request('/api/notifications', { method: 'DELETE' });
 }
 
+// --- Planner priorities (Medical Desert Planner) ---------------------------
+
+/** The caller's saved planner priorities. GET /api/planner-priorities */
+export async function fetchPlannerPriorities(): Promise<PlannerPriorityItem[]> {
+  const payload = await request<unknown>('/api/planner-priorities');
+  return unwrapRows<PlannerPriorityItem>(payload);
+}
+
+/** Save (upsert) a district priority + note/lens. POST /api/planner-priorities */
+export async function savePlannerPriority(
+  input: SavePlannerPriorityInput,
+): Promise<{ district_id: string; saved: boolean }> {
+  return request('/api/planner-priorities', { method: 'POST', json: input });
+}
+
+/** Un-save a district priority. DELETE /api/planner-priorities/:districtId */
+export async function removePlannerPriority(
+  districtId: string,
+): Promise<{ district_id: string; saved: boolean }> {
+  return request(`/api/planner-priorities/${encodeURIComponent(districtId)}`, {
+    method: 'DELETE',
+  });
+}
+
 // ===========================================================================
 // AI ASSISTANT — POST /api/assistant
 //
@@ -1093,6 +1183,10 @@ export function useFacilityNabh(id: string | undefined): AsyncState<FacilityNabh
   return useFetch(() => (id ? facilityNabh(id) : Promise.resolve(null)), [id]);
 }
 
+export function useFacilityClaims(id: string | undefined): AsyncState<FacilityClaimRow[]> {
+  return useFetch(() => (id ? facilityClaims(id) : Promise.resolve([])), [id]);
+}
+
 export function useAtlasStateHealth(): AsyncState<StateHealthRow[]> {
   return useFetch(() => atlasStateHealth(), []);
 }
@@ -1176,6 +1270,10 @@ export function useNotifications(): AsyncState<{ items: Notification[]; unread: 
 
 export function useMe(): AsyncState<{ account: Account | null; email: string }> {
   return useFetch(() => fetchMe(), []);
+}
+
+export function usePlannerPriorities(): AsyncState<PlannerPriorityItem[]> {
+  return useFetch(() => fetchPlannerPriorities(), []);
 }
 
 // ===========================================================================

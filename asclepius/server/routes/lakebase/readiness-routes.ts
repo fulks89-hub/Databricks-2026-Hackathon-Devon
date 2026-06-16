@@ -46,6 +46,7 @@ function limitParam(raw: unknown, def = 60, max = 1000): number {
 }
 
 const GAP_TYPES = [
+  'corrupted',
   'flagged_quality',
   'possible_duplicate',
   'unverified_claims',

@@ -96,17 +96,24 @@ SELECT unique_id||'__sparse_fields', unique_id, facility_name, state, district,
   'sparse_fields',
   CASE WHEN contact_channel<>'none'
     THEN 'Enrich '||concat_ws(', ', CASE WHEN sparse_capability THEN 'capability' END,
-          CASE WHEN sparse_procedure THEN 'procedure' END, CASE WHEN sparse_equipment THEN 'equipment' END)
+          CASE WHEN sparse_procedure THEN 'procedure' END, CASE WHEN sparse_equipment THEN 'equipment' END,
+          CASE WHEN sparse_beds THEN 'beds' END, CASE WHEN sparse_year THEN 'year' END,
+          CASE WHEN sparse_specialties THEN 'specialties' END)
          ||' from '||contact_channel||' / source URL.'
     ELSE 'Enrich '||concat_ws(', ', CASE WHEN sparse_capability THEN 'capability' END,
-          CASE WHEN sparse_procedure THEN 'procedure' END, CASE WHEN sparse_equipment THEN 'equipment' END)
+          CASE WHEN sparse_procedure THEN 'procedure' END, CASE WHEN sparse_equipment THEN 'equipment' END,
+          CASE WHEN sparse_beds THEN 'beds' END, CASE WHEN sparse_year THEN 'year' END,
+          CASE WHEN sparse_specialties THEN 'specialties' END)
          ||' from source URL / external lookup.'
   END,
   contact_channel, contact_value,
   concat_ws(', ', CASE WHEN sparse_capability THEN 'capability' END,
-                  CASE WHEN sparse_procedure THEN 'procedure' END, CASE WHEN sparse_equipment THEN 'equipment' END),
+                  CASE WHEN sparse_procedure THEN 'procedure' END, CASE WHEN sparse_equipment THEN 'equipment' END,
+                  CASE WHEN sparse_beds THEN 'beds' END, CASE WHEN sparse_year THEN 'year' END,
+                  CASE WHEN sparse_specialties THEN 'specialties' END),
   high_leverage, 'open', data_confidence, completeness_score, sample_unverified_specialty, unverified_claims, 6
-FROM dr WHERE (sparse_capability OR sparse_procedure OR sparse_equipment) {CLEAN}
+FROM dr WHERE (sparse_capability OR sparse_procedure OR sparse_equipment
+               OR sparse_beds OR sparse_year OR sparse_specialties) {CLEAN}
 """)
 con.run("ALTER TABLE readiness.readiness_gap_items ADD PRIMARY KEY (gap_id)")
 con.run("CREATE INDEX ix_gap_type ON readiness.readiness_gap_items (gap_type)")

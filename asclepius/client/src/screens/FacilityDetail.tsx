@@ -41,10 +41,7 @@ import {
   NotePencil,
   FloppyDisk,
   ClockCountdown,
-  Warning,
   PhoneCall,
-  Phone,
-  WhatsappLogo,
   SealCheck,
   CheckCircle,
   Flag,
@@ -59,6 +56,7 @@ import {
 import {
   useFacilityDetail,
   useFacilityNabh,
+  useFacilityClaims,
   saveShortlist,
   removeShortlist,
   postReview,
@@ -66,6 +64,7 @@ import {
   addNote,
   type FacilityRow,
   type FacilityNabhRow,
+  type FacilityClaimRow,
   type Claim,
 } from '@/lib/api';
 import {
@@ -104,53 +103,30 @@ function asClaimStatus(s: string | null | undefined): ClaimStatus {
 }
 
 // ---------------------------------------------------------------------------
-// Ported prototype helpers (pure — no app state). Hash-derived demo fields
-// (phone / freshness) match the prototype byte-for-byte so the synthetic
-// "call to confirm" + decay copy reproduce exactly.
+// Ported prototype helpers (pure — no app state).
+//
+// TASK #9 de-fabrication: the prototype's synthetic +91 phone (facPhone) and
+// the hash-derived "last crawled ~N months ago" confidence-decay have been
+// removed — both invented data on a screen whose entire pitch is trust. The
+// read contract exposes NO real published phone for the facility-detail path
+// and NO crawl/updated timestamp, so neither can be re-sourced this pass; they
+// are relabeled honestly instead. The only real signal kept is the user's own
+// confirm action (verifiedByUser), which is genuine.
 // ---------------------------------------------------------------------------
 
-/** facPhone(f): deterministic synthetic +91 number, hashed off the id. */
-function facPhone(id: string): string {
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 131 + id.charCodeAt(i)) >>> 0;
-  const a = 90000 + (h % 9999);
-  const b = String(h % 99999).padStart(5, '0');
-  return '+91 ' + a + ' ' + b;
-}
-
 interface Freshness {
-  monthsOld: number;
   verifiedByUser: boolean;
   label: string;
-  decayedConf: number;
-  stale: boolean;
-  lostPts: number;
 }
 
-/** freshness(f): record age + confidence-decay (prototype hash, unverified path). */
-function freshnessOf(f: FacilityRow, verifiedByUser: boolean): Freshness {
-  if (verifiedByUser) {
-    return {
-      monthsOld: 0,
-      verifiedByUser: true,
-      label: 'You verified just now',
-      decayedConf: f.conf ?? 0,
-      stale: false,
-      lostPts: 0,
-    };
-  }
-  let h = 0;
-  for (let i = 0; i < f.id.length; i++) h = (h * 31 + f.id.charCodeAt(i)) >>> 0;
-  const monthsOld = 2 + (h % 34);
-  const lost = Math.min(40, Math.round(monthsOld * 1.2));
-  return {
-    monthsOld,
-    verifiedByUser: false,
-    label: 'Last crawled ~' + monthsOld + ' months ago',
-    decayedConf: Math.max(20, (f.conf ?? 0) - lost),
-    stale: monthsOld >= 18,
-    lostPts: lost,
-  };
+/** freshness(f): record-freshness state. No real crawl timestamp exists in the
+ *  read contract, so the only honest state is "you verified just now" (the
+ *  user's own confirm action) vs "crawl date not recorded". No synthetic age
+ *  or confidence-decay is fabricated. */
+function freshnessOf(_f: FacilityRow, verifiedByUser: boolean): Freshness {
+  return verifiedByUser
+    ? { verifiedByUser: true, label: 'You verified just now' }
+    : { verifiedByUser: false, label: 'Crawl date not recorded for this record' };
 }
 
 /** flagsFor(f): record-quality caveats (prototype copy verbatim). */
@@ -163,8 +139,10 @@ function flagsFor(f: FacilityRow): { text: string }[] {
   return out;
 }
 
-/** dqOf(f).score: record-quality score (0–100), prototype weights. */
-function dqScoreOf(f: FacilityRow, facilityConfirmed: boolean, dupResolved: boolean, stale: boolean): number {
+/** dqOf(f).score: record-quality score (0–100), prototype weights. The stale
+ *  weight was dropped with the fabricated freshness (TASK #9) — there is no
+ *  real crawl-age signal in the read contract to penalize on. */
+function dqScoreOf(f: FacilityRow, facilityConfirmed: boolean, dupResolved: boolean): number {
   let score = 100;
   const weights: number[] = [];
   if (f.beds == null) weights.push(16);
@@ -173,9 +151,6 @@ function dqScoreOf(f: FacilityRow, facilityConfirmed: boolean, dupResolved: bool
   if (!f.procedure) weights.push(9);
   if (asTrust(f.trust) !== 'verified' && !facilityConfirmed) weights.push(18);
   if (f.possible_entity_dup && !dupResolved) weights.push(22);
-  // Stale records lose 9 pts (prototype dqOf: fr.stale && !fr.verifiedByUser).
-  // The caller passes fresh.stale, which is already false once user-confirmed.
-  if (stale) weights.push(9);
   const unv = (f.claims ?? []).filter((c) => asClaimStatus(c.status) === 'no-evidence').length;
   if (unv > 0) weights.push(7);
   for (const w of weights) score -= w;
@@ -344,6 +319,7 @@ export function FacilityDetail() {
   const { id } = useParams<{ id: string }>();
   const { data, loading, error, refetch } = useFacilityDetail(id);
   const nabh = useFacilityNabh(id);
+  const gradedClaims = useFacilityClaims(id);
 
   // Local "this-session" mirrors of the writes (the reads don't round-trip the
   // owner's own shortlist/review/note state into the FacilityRow). Each write
@@ -520,14 +496,7 @@ export function FacilityDetail() {
       .filter(([, v]) => !!v)
       .map(([label, text]) => ({ label, text: text as string }));
 
-    const dq = dqScoreOf(f, facilityConfirmed, false, fresh.stale && !fresh.verifiedByUser);
-    const phone = facPhone(f.id);
-    const telHref = 'tel:' + phone.replace(/[^0-9+]/g, '');
-    const waText =
-      'Hello, checking via Asclepius — do you currently offer ' +
-      f.specialties.slice(0, 3).join(', ') +
-      '? Is that service active right now?';
-    const waHref = 'https://wa.me/91' + phone.replace(/[^0-9]/g, '').slice(-10) + '?text=' + encodeURIComponent(waText);
+    const dq = dqScoreOf(f, facilityConfirmed, false);
 
     return {
       f,
@@ -541,15 +510,46 @@ export function FacilityDetail() {
       flags: flagsFor(f),
       dq,
       fresh,
-      phone,
-      telHref,
-      waHref,
       hasDir: f.lat != null && f.lng != null,
       dirUrl: directionsUrl(f),
       needs: f.needs ?? [],
       coordSource: f.coord_source,
     };
   }, [data, facilityMark, callMark]);
+
+  // ----- claim grading (TASK #2) -------------------------------------------
+  // Prefer the server-graded rows from useFacilityClaims (each carries a trust
+  // `tier` + cited evidence_snippet/cert_url). Fall back to the legacy uniform
+  // view.claims (all 'Self-reported') only when the grading fetch is empty, so
+  // a facility with no trust-card rows never regresses to a blank list.
+  const claimRows = useMemo((): {
+    key: string;
+    label: string;
+    status: ClaimStatus;
+    snippet: string | null;
+    certUrl: string | null;
+  }[] => {
+    const graded = gradedClaims.data ?? [];
+    if (graded.length > 0) {
+      return graded
+        .filter((c: FacilityClaimRow) => !!c.claimed_specialty)
+        .map((c: FacilityClaimRow) => ({
+          key: c.claimed_specialty as string,
+          label: c.claimed_specialty as string,
+          // ClaimTier is a subset of ClaimStatus, so this widens safely.
+          status: c.tier,
+          snippet: c.evidence_snippet,
+          certUrl: c.cert_url,
+        }));
+    }
+    return (view?.claims ?? []).map((c: Claim) => ({
+      key: c.text,
+      label: c.text,
+      status: asClaimStatus(c.status),
+      snippet: null,
+      certUrl: null,
+    }));
+  }, [gradedClaims.data, view]);
 
   // ----- states -----------------------------------------------------------
 
@@ -641,22 +641,44 @@ export function FacilityDetail() {
             <SectionLabel icon={<ListChecks weight="fill" size={14} />} mt={26}>
               Claimed capabilities
             </SectionLabel>
-            {view.claims.length ? (
+            {claimRows.length ? (
               <div
                 className="mt-3 flex flex-col gap-px"
                 style={{ border: `1px solid ${neutral.divider2}`, borderRadius: 14, overflow: 'hidden' }}
               >
-                {view.claims.map((c: Claim) => {
-                  const mark = claimMarks[c.text];
+                {claimRows.map((c) => {
+                  const mark = claimMarks[c.label];
                   return (
-                    <div key={c.text}>
+                    <div key={c.key}>
                       <ClaimRow
-                        label={c.text}
-                        status={asClaimStatus(c.status)}
+                        label={c.label}
+                        status={c.status}
                         userMark={mark}
-                        onConfirm={() => void reviewClaim(c.text, 'confirmed')}
-                        onDispute={() => void reviewClaim(c.text, 'disputed')}
+                        onConfirm={() => void reviewClaim(c.label, 'confirmed')}
+                        onDispute={() => void reviewClaim(c.label, 'disputed')}
                       />
+                      {(c.snippet || c.certUrl) && (
+                        <div style={{ padding: '6px 12px 2px' }}>
+                          {c.snippet && (
+                            <EvidenceQuote
+                              text={c.snippet}
+                              sourceLabel="Source: trust card evidence (trust.facility_trust_card)"
+                            />
+                          )}
+                          {c.certUrl && (
+                            <a
+                              href={c.certUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-1.5 inline-flex items-center gap-1.5"
+                              style={{ fontSize: 12, fontWeight: fonts.weight.semibold, color: semantic.success, textDecoration: 'none' }}
+                            >
+                              <SealCheck weight="fill" size={13} />
+                              NABH scope PDF ↗
+                            </a>
+                          )}
+                        </div>
+                      )}
                       {mark && (
                         <div style={{ fontSize: 11, fontWeight: fonts.weight.semibold, color: mark === 'confirmed' ? semantic.success : semantic.danger, marginTop: 4, marginLeft: 4 }}>
                           {mark === 'confirmed' ? 'You confirmed this capability' : 'You disputed this capability'}
@@ -905,39 +927,32 @@ export function FacilityDetail() {
 
             <div style={{ height: 1, background: neutral.divider, margin: '20px 0' }} />
 
-            {/* record freshness / decay */}
+            {/* record freshness — no synthetic crawl-age (TASK #9). The read
+                contract carries no crawl/updated timestamp, so we state that
+                honestly rather than fabricate a "~N months ago" decay. */}
             <SectionLabel icon={<ClockCountdown weight="fill" size={14} />} color={semantic.warn}>Record freshness</SectionLabel>
-            <div className="mt-2.5 flex items-center justify-between gap-2" style={{ fontSize: 13, color: neutral.textSoft }}>
+            <div className="mt-2.5 flex items-center gap-2" style={{ fontSize: 13, color: view.fresh.verifiedByUser ? semantic.success : neutral.textSoft }}>
+              {view.fresh.verifiedByUser ? <CheckCircle weight="fill" size={14} /> : <Info weight="fill" size={14} color={neutral.textFaint} />}
               <span>{view.fresh.label}</span>
-              {view.fresh.lostPts > 0 && !view.fresh.verifiedByUser && (
-                <span style={{ fontFamily: fonts.body, fontWeight: fonts.weight.bold, fontSize: 12, color: semantic.danger }}>
-                  confidence −{view.fresh.lostPts} from age
-                </span>
-              )}
             </div>
-            {view.fresh.stale && !view.fresh.verifiedByUser && (
-              <div className="mt-2.5 flex items-center gap-1.5" style={{ background: semantic.dangerBg, color: semantic.danger, borderRadius: 9, padding: '8px 11px', fontFamily: fonts.body, fontWeight: fonts.weight.semibold, fontSize: 12.5 }}>
-                <Warning weight="fill" size={14} />
-                Ageing record — confirm to refresh confidence.
+            {!view.fresh.verifiedByUser && (
+              <div className="mt-2" style={{ fontSize: 12, color: neutral.textFaint }}>
+                Confirm below to timestamp this record with your own verification.
               </div>
             )}
 
-            {/* call to confirm → reviews(via='call') */}
+            {/* call to confirm → reviews(via='call'). TASK #9: the synthetic
+                +91 phone and its tel:/WhatsApp deep-links were removed — no
+                published number exists in the read contract, so we don't invent
+                one. The genuine outcome-logging action is kept. */}
             <div className="mt-4" style={{ background: role.clinician.tint2, border: '1px solid #DCE9E2', borderRadius: 14, padding: '14px 15px' }}>
               <div className="flex items-center gap-1.5" style={{ fontFamily: fonts.body, fontWeight: fonts.weight.bold, fontSize: 13.5, color: neutral.ink }}>
                 <PhoneCall weight="fill" size={15} color={semantic.success} />
-                Call to confirm
+                Confirm by phone
               </div>
-              <div className="mt-1" style={{ fontSize: 13, color: neutral.textMuted, fontVariantNumeric: 'tabular-nums' }}>{view.phone}</div>
-              <div className="mt-3 flex gap-2">
-                <a href={view.telHref} className="inline-flex flex-1 items-center justify-center gap-1.5" style={{ background: semantic.success, color: '#fff', borderRadius: 10, padding: 9, fontFamily: fonts.body, fontWeight: fonts.weight.bold, fontSize: 13, textDecoration: 'none' }}>
-                  <Phone weight="fill" size={14} />
-                  Call
-                </a>
-                <a href={view.waHref} target="_blank" rel="noopener noreferrer" className="inline-flex flex-1 items-center justify-center gap-1.5" style={{ background: '#fff', color: semantic.success, border: `1px solid ${role.clinician.border}`, borderRadius: 10, padding: 9, fontFamily: fonts.body, fontWeight: fonts.weight.bold, fontSize: 13, textDecoration: 'none' }}>
-                  <WhatsappLogo weight="fill" size={14} />
-                  WhatsApp
-                </a>
+              <div className="mt-1 flex items-start gap-1.5" style={{ fontSize: 12, color: neutral.textFaint }}>
+                <Info weight="fill" size={13} className="mt-0.5 shrink-0" />
+                No published number in this record. Reach the facility through your own directory, then log the outcome below.
               </div>
               <div className="mt-3" style={{ fontSize: 11.5, color: neutral.textFaint }}>After the call:</div>
               <div className="mt-1.5 flex gap-2">

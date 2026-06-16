@@ -63,10 +63,15 @@ export const trust = {
 } as const;
 export type TrustState = keyof typeof trust;
 
-// ---- Claim / evidence states — mirror of claimMeta(s). Keys match facilities.claims[].status.
+// ---- Claim / evidence states — mirror of claimMeta(s). Keys match the
+// server-graded ClaimTier ('verified' | 'review' | 'claimed' | 'contradiction')
+// emitted by GET /api/data/facility-claims/:id, plus the legacy 'no-evidence'
+// key kept for the fallback asClaimStatus path. Indexed directly as claim[tier].
 export const claim = {
-  verified: { label: 'Verified', fg: '#2E7D67', bg: '#E4EFEA' },
-  claimed: { label: 'Claimed', fg: '#9A6A12', bg: '#F6EBD6' },
+  verified: { label: 'Authority-verified', fg: '#2E7D67', bg: '#E4EFEA' },
+  review: { label: 'Corroborated', fg: '#5B8C3E', bg: '#EAF1E1' },
+  claimed: { label: 'Self-reported', fg: '#9A6A12', bg: '#F6EBD6' },
+  contradiction: { label: 'Conflicting evidence', fg: '#7A3B8C', bg: '#F0E4F4' },
   'no-evidence': { label: 'No evidence', fg: '#B2503C', bg: '#F6E2DC' },
 } as const;
 export type ClaimStatus = keyof typeof claim;

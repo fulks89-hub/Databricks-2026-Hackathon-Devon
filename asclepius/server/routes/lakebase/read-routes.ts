@@ -57,6 +57,13 @@ function registerReadRoutes(app: express.Application, db: LakebaseClient): void 
   // GET /api/data/facility-kpis
   // Field names match the client `FacilityKpiRow` contract (lib/api.ts):
   // total_facilities, states, districts, claimed_facilities, unverified_facilities.
+  //
+  // `claimed_facilities` was structurally zero: it FILTERed on trust='verified',
+  // but app_read.facilities.trust never emits 'verified' (only 'review' /
+  // 'unverified'). It now counts facilities that carry at least one extracted
+  // claim (trust = 'review'), and `unverified_facilities` counts the rest
+  // (trust = 'unverified'), so the two tiles partition cleanly. The client
+  // tile is relabeled 'With claims' (see AnalyticsPage).
   app.get(
     '/api/data/facility-kpis',
     h(async (_req, res) => {
@@ -71,8 +78,9 @@ function registerReadRoutes(app: express.Application, db: LakebaseClient): void 
            COUNT(*)::int                                              AS total_facilities,
            COUNT(DISTINCT state)::int                                 AS states,
            COUNT(DISTINCT district)::int                              AS districts,
-           COUNT(*) FILTER (WHERE trust = 'verified')::int            AS claimed_facilities,
-           COUNT(*) FILTER (WHERE trust IS DISTINCT FROM 'verified')::int
+           COUNT(*) FILTER (WHERE trust IS DISTINCT FROM 'unverified')::int
+                                                                      AS claimed_facilities,
+           COUNT(*) FILTER (WHERE trust = 'unverified')::int
                                                                       AS unverified_facilities
          FROM app_read.facilities`,
       );
@@ -102,12 +110,17 @@ function registerReadRoutes(app: express.Application, db: LakebaseClient): void 
       const like = q ? `%${q}%` : '';
       const limit = limitParam(req.query.limit);
 
+      // State is matched case-insensitively (UPPER/UPPER, mirroring the
+      // medical-deserts route) so an origin->state scope from the Patient
+      // Copilot can't silently return zero rows on a casing/spelling drift.
+      // `evidence` + `claims` are returned here (not just on facility/:id) so
+      // result cards can render the verbatim cited text backing each match.
       const r = await db.query(
         `SELECT id, name, type, city, state, lat, lng, specialties, trust, conf,
                 beds, year, capability, procedure, equipment, description,
-                pincode, district, data_quality_flag
+                evidence, claims, pincode, district, data_quality_flag
          FROM app_read.facilities
-         WHERE ($1 = '' OR state = $1)
+         WHERE ($1 = '' OR UPPER(state) = UPPER($1))
            AND ($2 = '' OR district = $2)
            AND ($3 = '' OR type = $3)
            AND ($4 = '' OR trust = $4)
@@ -156,6 +169,69 @@ function registerReadRoutes(app: express.Application, db: LakebaseClient): void 
         [req.params.id],
       );
       ok(res, { nabh: r.rows[0] ?? null });
+    }),
+  );
+
+  // ===== Per-claim trust grading (Trust Desk hero) =========================
+  // GET /api/data/facility-claims/:id
+  //
+  // Grades every claimed capability for a facility into one of four trust tiers
+  // so the Trust Desk can differentiate verified / corroborated / unverified /
+  // contradicted claims with cited evidence — instead of the uniform 'claimed'
+  // every row shows today. Reads trust.facility_trust_card (the proven column
+  // set + join key from readiness-routes.ts) and LEFT JOINs the facility's
+  // NABH authority row (name-corroborated only) to expose verified_specialties
+  // + cert_url. Grading is done SERVER-SIDE (the citation guard stays server-
+  // owned) via a CASE that is defensive about the exact literal values in
+  // consistency_flag / trust_tier / corroboration (sampling them live is the
+  // main thread's job): predicates are normalized (lower/trim) and matched with
+  // ILIKE/IN over the plausible markers, so an unexpected literal degrades to a
+  // safe lower tier rather than mis-crediting.
+  //
+  //   contradiction — consistency_flag signals a conflict (contradict*/inconsist*/conflict*)
+  //   verified      — NABH-authority-backed (claimed_specialty appears in the
+  //                   ' | '-delimited verified_specialties) OR trust_tier is a
+  //                   top tier (strong/authority/verified)
+  //   review        — corroboration present (anything other than 'none'/empty)
+  //   claimed       — default (extracted claim, no corroboration yet)
+  app.get(
+    '/api/data/facility-claims/:id',
+    h(async (req, res) => {
+      const r = await db.query(
+        `SELECT t.claimed_specialty,
+                t.trust_tier,
+                t.corroboration,
+                t.consistency_flag,
+                t.matched_evidence,
+                t.evidence_snippet,
+                t.accredited,
+                n.cert_url AS cert_url,
+                CASE
+                  WHEN lower(COALESCE(t.consistency_flag, '')) ~ '(contradict|inconsist|conflict|mismatch)'
+                    THEN 'contradiction'
+                  WHEN n.verified_specialties IS NOT NULL
+                       AND ' ' || lower(replace(n.verified_specialties, '|', ' | ')) || ' '
+                           LIKE '% ' || lower(trim(t.claimed_specialty)) || ' %'
+                    THEN 'verified'
+                  WHEN lower(COALESCE(t.trust_tier, '')) ~ '(strong|authority|verified)'
+                    THEN 'verified'
+                  WHEN COALESCE(NULLIF(lower(trim(t.corroboration)), ''), 'none') <> 'none'
+                    THEN 'review'
+                  ELSE 'claimed'
+                END AS tier
+         FROM trust.facility_trust_card t
+         LEFT JOIN nabh.facility_authority n
+                ON n.facility_id = $1
+               AND n.match_confidence = 'name_corroborated'
+         WHERE t.unique_id = $1
+         ORDER BY
+           (lower(COALESCE(t.consistency_flag, '')) ~ '(contradict|inconsist|conflict|mismatch)') DESC,
+           (COALESCE(NULLIF(lower(trim(t.corroboration)), ''), 'none') = 'none') DESC,
+           t.claimed_specialty
+         LIMIT 40`,
+        [req.params.id],
+      );
+      ok(res, { claims: r.rows });
     }),
   );
 
@@ -237,25 +313,43 @@ function registerReadRoutes(app: express.Application, db: LakebaseClient): void 
       const sort: 'burden_rank' | 'scarcity_rank' =
         str(req.query.sort) === 'scarcity' ? 'scarcity_rank' : 'burden_rank';
       const limit = limitParam(req.query.limit, 60, 706);
+      // coverage_flag lives on readiness.gold_district_supply_need (district
+      // grain), NOT on area_medical_scarcity — so it is LEFT JOINed in on the
+      // UPPER(state)/UPPER(district) name pair (mismatches yield NULL = no
+      // badge, which is the safe degradation). It separates a genuine desert
+      // from a data-poor district that the naive map mistakes for one. The
+      // join is best-effort: readiness.* is already SELECTed by the readiness
+      // routes, so the app SP grant exists; a NULL coverage_flag renders no
+      // badge client-side. `supply_label` derives the badge category (mirrors
+      // readiness-routes.ts gap_label) so the client doesn't re-encode the
+      // literal.
       const r = await db.query(
-        `SELECT district_id,
-                district,
-                state,
-                burden_rank::int                  AS burden_rank,
-                burden_score::float8              AS burden_score,
-                n_capability_deserts::int         AS n_capability_deserts,
-                population_2011::int               AS population_2011,
-                scarcity_rank::int                AS scarcity_rank,
-                medical_scarcity::float8          AS medical_scarcity,
-                scarcity_tier,
-                mean_distance_score::float8       AS mean_distance_score,
-                n_capabilities_scored::int        AS n_capabilities_scored,
-                worst_capability,
-                second_worst_capability,
-                third_worst_capability
-           FROM medical_desert.area_medical_scarcity
-          WHERE ($1 = '' OR UPPER(state) = UPPER($1))
-          ORDER BY ${sort} ASC
+        `SELECT m.district_id,
+                m.district,
+                m.state,
+                m.burden_rank::int                  AS burden_rank,
+                m.burden_score::float8              AS burden_score,
+                m.n_capability_deserts::int         AS n_capability_deserts,
+                m.population_2011::int               AS population_2011,
+                m.scarcity_rank::int                AS scarcity_rank,
+                m.medical_scarcity::float8          AS medical_scarcity,
+                m.scarcity_tier,
+                m.mean_distance_score::float8       AS mean_distance_score,
+                m.n_capabilities_scored::int        AS n_capabilities_scored,
+                m.worst_capability,
+                m.second_worst_capability,
+                m.third_worst_capability,
+                g.coverage_flag,
+                CASE
+                  WHEN g.coverage_flag = 'insufficient_supply_data' THEN 'unknown_supply'
+                  ELSE NULL
+                END                                  AS supply_label
+           FROM medical_desert.area_medical_scarcity m
+           LEFT JOIN readiness.gold_district_supply_need g
+                  ON UPPER(g.state) = UPPER(m.state)
+                 AND UPPER(g.nfhs_district) = UPPER(m.district)
+          WHERE ($1 = '' OR UPPER(m.state) = UPPER($1))
+          ORDER BY m.${sort} ASC
           LIMIT $2`,
         [state, limit],
       );

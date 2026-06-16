@@ -296,6 +296,20 @@ const DDL: string[] = [
   // Latest-action lookups per (owner, gap).
   `CREATE INDEX IF NOT EXISTS ura_user_gap
      ON app.user_review_actions (user_email, gap_id, created_at DESC)`,
+
+  // 16. planner_priorities — Track 2 (Medical Desert Planner) deploy-priority
+  //     marks + a one-line note, owner-scoped by (user_email, district_id).
+  //     district_id is the medical_desert key UPPER(state)||'::'||UPPER(district).
+  `CREATE TABLE IF NOT EXISTS app.planner_priorities (
+     user_email   TEXT NOT NULL,
+     district_id  TEXT NOT NULL,
+     district     TEXT,
+     state        TEXT,
+     lens         TEXT,
+     note         TEXT,
+     created_at   TIMESTAMPTZ DEFAULT NOW(),
+     PRIMARY KEY (user_email, district_id)
+   )`,
 ];
 
 /** Best-effort schema bootstrap. Logs but never crashes boot (deploy-first:
@@ -438,6 +452,14 @@ const NotificationSchema = z.object({
   text: z.string().min(1, 'text required'),
   notif_key: z.string().optional(),
   user_email: z.string().optional(),
+});
+
+const PlannerPrioritySchema = z.object({
+  district_id: z.string().min(1, 'district_id required'),
+  district: z.string().optional(),
+  state: z.string().optional(),
+  lens: z.enum(['burden', 'scarcity']).optional(),
+  note: z.string().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -1313,6 +1335,68 @@ function registerWriteRoutes(app: express.Application, db: LakebaseClient): void
       const email = callerEmail(req);
       await db.query(`DELETE FROM app.notifications WHERE user_email = $1`, [email]);
       ok(res, { cleared: true });
+    }),
+  );
+
+  // ===== 15. PLANNER PRIORITIES (Track 2 — Medical Desert Planner) ==========
+  // Owner-scoped deploy-priority marks + a one-line note, keyed by district_id
+  // (UPPER(state)||'::'||UPPER(district)). POST always upserts (save + edit the
+  // note/lens without un-saving); DELETE un-saves. This POST+DELETE pair (vs a
+  // toggle) keeps the note edit from ambiguously clearing the saved mark.
+
+  app.get(
+    '/api/planner-priorities',
+    h(async (req, res) => {
+      const email = callerEmail(req);
+      const r = await db.query(
+        `SELECT district_id, district, state, lens, note, created_at
+         FROM app.planner_priorities
+         WHERE user_email = $1 ORDER BY created_at DESC LIMIT 200`,
+        [email],
+      );
+      ok(res, { items: r.rows });
+    }),
+  );
+
+  // POST /api/planner-priorities — upsert (save + note/lens). Body
+  // { district_id, district?, state?, lens?, note? }.
+  app.post(
+    '/api/planner-priorities',
+    h(async (req, res) => {
+      const email = callerEmail(req);
+      const body = parseBody(PlannerPrioritySchema, req, res);
+      if (!body) return;
+      await db.query(
+        `INSERT INTO app.planner_priorities
+           (user_email, district_id, district, state, lens, note, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, NOW())
+         ON CONFLICT (user_email, district_id)
+         DO UPDATE SET note = EXCLUDED.note, lens = EXCLUDED.lens,
+                       district = EXCLUDED.district, state = EXCLUDED.state,
+                       created_at = NOW()`,
+        [
+          email,
+          body.district_id,
+          body.district ?? null,
+          body.state ?? null,
+          body.lens ?? null,
+          body.note ?? null,
+        ],
+      );
+      ok(res, { district_id: body.district_id, saved: true });
+    }),
+  );
+
+  // DELETE /api/planner-priorities/:districtId — un-save.
+  app.delete(
+    '/api/planner-priorities/:districtId',
+    h(async (req, res) => {
+      const email = callerEmail(req);
+      await db.query(
+        `DELETE FROM app.planner_priorities WHERE user_email = $1 AND district_id = $2`,
+        [email, req.params.districtId],
+      );
+      ok(res, { district_id: req.params.districtId, saved: false });
     }),
   );
 }

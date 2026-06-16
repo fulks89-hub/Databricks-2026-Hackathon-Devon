@@ -1,11 +1,13 @@
-import { CheckCircle, WarningCircle, XCircle, ThumbsUp, ThumbsDown } from '@phosphor-icons/react';
+import { CheckCircle, SealCheck, WarningCircle, ShieldWarning, XCircle, ThumbsUp, ThumbsDown } from '@phosphor-icons/react';
 import { Button } from '@databricks/appkit-ui/react';
 import { cn } from '@/lib/utils';
 import { claim, fonts, neutral, semantic, type ClaimStatus } from './theme';
 
 const ICON: Record<ClaimStatus, typeof CheckCircle> = {
-  verified: CheckCircle,
+  verified: SealCheck,
+  review: CheckCircle,
   claimed: WarningCircle,
+  contradiction: ShieldWarning,
   'no-evidence': XCircle,
 };
 

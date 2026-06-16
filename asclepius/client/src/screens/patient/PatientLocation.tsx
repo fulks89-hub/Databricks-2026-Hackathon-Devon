@@ -78,7 +78,7 @@ export default function PatientLocation() {
           }}
         >
           <MapPin weight="fill" size={16} color={ACCENT} />
-          Your city &middot; Maharashtra
+          Your city &middot; India
         </div>
 
         <div className="flex flex-wrap" style={{ gap: 10 }}>
