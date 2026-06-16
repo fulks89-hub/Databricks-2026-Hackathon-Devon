@@ -62,7 +62,12 @@ function registerReadinessReadRoutes(app: express.Application, db: LakebaseClien
   // GET /api/data/readiness/summary — overall + per-section counts (the KPIs).
   app.get(
     '/api/data/readiness/summary',
-    h(async (_req, res) => {
+    h(async (req, res) => {
+      // total_gaps is the headline "Open gaps in queue" KPI, so it must overlay this
+      // caller's latest review action exactly like /gaps does: a gap is OPEN unless its
+      // effective status — COALESCE(ua.status, g.status) — is a resolved/closed status
+      // ('patched','dismissed'; 'dedupe' also writes 'patched'). 'flagged'/'open' stay open.
+      const email = callerEmail(req);
       const overall = await db.query<{
         total_facilities: number;
         high_leverage: number;
@@ -74,22 +79,39 @@ function registerReadinessReadRoutes(app: express.Application, db: LakebaseClien
            (SELECT COUNT(*)::int FROM readiness.data_readiness)                              AS total_facilities,
            (SELECT COUNT(*)::int FROM readiness.data_readiness WHERE high_leverage)          AS high_leverage,
            (SELECT COUNT(*)::int FROM readiness.data_readiness WHERE primary_gap_type='none') AS clean_facilities,
-           (SELECT COUNT(*)::int FROM readiness.readiness_gap_items)                         AS total_gaps,
+           (SELECT COUNT(*)::int
+              FROM readiness.readiness_gap_items g
+              LEFT JOIN LATERAL (
+                SELECT status FROM app.user_review_actions a
+                WHERE a.gap_id = g.gap_id AND a.user_email = $1
+                ORDER BY a.created_at DESC LIMIT 1
+              ) ua ON true
+              WHERE COALESCE(ua.status, g.status) NOT IN ('patched','dismissed')) AS total_gaps,
            (SELECT ROUND(AVG(data_confidence)::numeric,3)::float8 FROM readiness.data_readiness) AS avg_confidence`,
+        [email],
       );
+      // Per-gap-type counts mirror the same overlay so each section badge reflects this
+      // caller's resolved items consistently with the headline total.
       const byGap = await db.query<{
         gap_type: string;
         n: number;
         high_leverage: number;
         avg_confidence: number;
       }>(
-        `SELECT gap_type,
+        `SELECT g.gap_type,
                 COUNT(*)::int                              AS n,
-                SUM(high_leverage::int)::int               AS high_leverage,
-                ROUND(AVG(data_confidence)::numeric,2)::float8 AS avg_confidence
-         FROM readiness.readiness_gap_items
-         GROUP BY gap_type
+                SUM(g.high_leverage::int)::int             AS high_leverage,
+                ROUND(AVG(g.data_confidence)::numeric,2)::float8 AS avg_confidence
+         FROM readiness.readiness_gap_items g
+         LEFT JOIN LATERAL (
+           SELECT status FROM app.user_review_actions a
+           WHERE a.gap_id = g.gap_id AND a.user_email = $1
+           ORDER BY a.created_at DESC LIMIT 1
+         ) ua ON true
+         WHERE COALESCE(ua.status, g.status) NOT IN ('patched','dismissed')
+         GROUP BY g.gap_type
          ORDER BY n DESC`,
+        [email],
       );
       ok(res, { summary: overall.rows[0] ?? null, by_gap: byGap.rows });
     }),
