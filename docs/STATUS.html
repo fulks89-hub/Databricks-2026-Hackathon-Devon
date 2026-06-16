@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asclepius — Team Status</title>
+<style>
+  :root{
+    --coral:#E0714C;   /* patient */
+    --green:#2E7D67;   /* clinician */
+    --blue:#3B6FB0;    /* hospital */
+    --ink:#241F1A;
+    --paper:#FAF6F0;
+    --card:#FFFFFF;
+    --line:#E7DECF;
+    --muted:#6E655B;
+    --soft:#F1EADD;
+    --done:#2E7D67;
+    --prog:#3B6FB0;
+    --queue:#9A8E7E;
+    --alert:#C7452B;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:28px 20px 64px;}
+
+  /* Header */
+  header.hero{
+    background:linear-gradient(135deg,#2B2521 0%,#3a322b 100%);
+    color:#FBF6EE;
+    border-radius:18px;
+    padding:28px 30px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero .bar{
+    position:absolute;left:0;top:0;bottom:0;width:8px;
+    background:linear-gradient(180deg,var(--coral) 0%,var(--green) 50%,var(--blue) 100%);
+  }
+  .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#D9CDBC;font-weight:600;}
+  header.hero h1{margin:6px 0 4px;font-size:34px;letter-spacing:-.5px;}
+  header.hero .tagline{color:#E6DBCB;font-size:15px;margin:0 0 16px;max-width:640px;}
+  .metarow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+  .metapill{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:999px;padding:6px 13px;font-size:13px;
+    display:flex;align-items:center;gap:7px;
+  }
+  .metapill b{font-weight:700;}
+  .deadline{background:rgba(199,69,43,.22);border-color:rgba(224,113,76,.5);}
+
+  h2.section{
+    font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;
+    margin:36px 0 14px;display:flex;align-items:center;gap:10px;
+  }
+  h2.section::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin-bottom:14px;
+  }
+  .card h3{margin:0 0 8px;font-size:17px;}
+  p{margin:0 0 10px;}
+  p:last-child{margin-bottom:0;}
+  .lede{font-size:15.5px;}
+
+  /* Chips */
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12.5px;font-weight:700;border-radius:999px;
+    padding:4px 11px;white-space:nowrap;line-height:1.2;
+    border:1px solid transparent;
+  }
+  .chip.done{background:rgba(46,125,103,.12);color:var(--done);border-color:rgba(46,125,103,.28);}
+  .chip.prog{background:rgba(59,111,176,.12);color:var(--prog);border-color:rgba(59,111,176,.28);}
+  .chip.queue{background:rgba(154,142,126,.14);color:#7A6F5E;border-color:rgba(154,142,126,.3);}
+  .chip.alert{background:rgba(199,69,43,.12);color:var(--alert);border-color:rgba(199,69,43,.3);}
+
+  /* Glance row */
+  .glance{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px;}
+  .glance .g{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:13px 14px;
+  }
+  .glance .g .lbl{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:7px;}
+  .glance .g .val{font-size:14px;font-weight:600;}
+
+  /* Stat strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .stat{background:var(--soft);border-radius:12px;padding:14px;text-align:center;}
+  .stat .n{font-size:24px;font-weight:800;letter-spacing:-.5px;}
+  .stat .k{font-size:12px;color:var(--muted);margin-top:2px;}
+
+  /* Three-sided roles */
+  .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .role{border:1px solid var(--line);border-radius:12px;padding:15px;background:var(--card);border-top:4px solid var(--line);}
+  .role.patient{border-top-color:var(--coral);}
+  .role.clinician{border-top-color:var(--green);}
+  .role.hospital{border-top-color:var(--blue);}
+  .role h4{margin:0 0 6px;font-size:15px;}
+  .role .who{font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--muted);}
+  .role.patient .who{color:var(--coral);}
+  .role.clinician .who{color:var(--green);}
+  .role.hospital .who{color:var(--blue);}
+  .role p{font-size:13.5px;color:#473f37;}
+
+  /* Workstream rows */
+  .ws{border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .ws .row{display:flex;gap:14px;padding:14px 16px;border-bottom:1px solid var(--line);align-items:flex-start;}
+  .ws .row:last-child{border-bottom:none;}
+  .ws .row .meta{flex:0 0 188px;}
+  .ws .row .meta .title{font-weight:700;font-size:14.5px;margin-bottom:7px;}
+  .ws .row .body{flex:1;font-size:13.5px;color:#473f37;}
+  .ws .row .body b{color:var(--ink);}
+
+  /* Tables */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--soft);}
+  tr:last-child td{border-bottom:none;}
+  td.crit{font-weight:600;width:200px;}
+
+  /* Alert / team action */
+  .alertbox{background:linear-gradient(135deg,#FCEEE9 0%,#FBF4ED 100%);border:1px solid rgba(199,69,43,.3);border-radius:14px;padding:20px;}
+  .alertbox h3{color:var(--alert);display:flex;align-items:center;gap:8px;}
+  .todo{list-style:none;margin:6px 0 0;padding:0;}
+  .todo li{padding:10px 0;border-bottom:1px dashed var(--line);display:flex;gap:11px;align-items:flex-start;}
+  .todo li:last-child{border-bottom:none;}
+  .todo .mark{flex:0 0 22px;height:22px;border-radius:6px;background:rgba(199,69,43,.14);color:var(--alert);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px;}
+  .todo .txt{font-size:13.5px;}
+  .todo .txt b{display:block;font-size:14px;margin-bottom:1px;}
+  .owner{font-size:11.5px;color:var(--muted);font-weight:600;}
+
+  /* Steps */
+  .steps{counter-reset:s;list-style:none;margin:0;padding:0;}
+  .steps li{position:relative;padding:6px 0 14px 40px;border-left:2px solid var(--line);margin-left:11px;}
+  .steps li:last-child{border-left-color:transparent;}
+  .steps li::before{
+    counter-increment:s;content:counter(s);
+    position:absolute;left:-13px;top:2px;width:24px;height:24px;border-radius:50%;
+    background:var(--ink);color:#fff;font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .steps li b{display:block;font-size:14.5px;}
+  .steps li span{font-size:13px;color:var(--muted);}
+
+  /* Links */
+  .links{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .lk{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px 14px;}
+  .lk .k{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;}
+  .lk .v{font-size:13.5px;word-break:break-all;color:var(--blue);font-weight:600;}
+  .team{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px;}
+  .member{border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:var(--card);}
+  .member .name{font-weight:700;font-size:14px;}
+  .member .role-t{font-size:12.5px;color:var(--muted);}
+
+  .stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .tech{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:5px 11px;font-size:12.5px;font-weight:600;}
+  .tech.mandate{background:rgba(46,125,103,.1);border-color:rgba(46,125,103,.3);color:var(--green);}
+
+  footer{margin-top:40px;text-align:center;color:var(--muted);font-size:12px;}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 4px;}
+
+  @media (max-width:680px){
+    .glance,.stats,.roles,.links,.team{grid-template-columns:1fr 1fr;}
+    .ws .row{flex-direction:column;}
+    .ws .row .meta{flex:none;}
+    header.hero h1{font-size:27px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- (1) HEADER -->
+  <header class="hero">
+    <div class="bar"></div>
+    <div class="eyebrow">Databricks "Apps &amp; Agents for Good" Hackathon · Team status</div>
+    <h1>Asclepius</h1>
+    <p class="tagline">A three-sided healthcare-facility-intelligence platform — Patient · Clinician · Hospital — over ~10,077 Indian healthcare facilities and real NFHS-5 district health data.</p>
+    <div class="metarow">
+      <span class="metapill">📅 Updated <b>Mon, Jun 15, 2026</b></span>
+      <span class="metapill deadline">🚩 Submit by <b>Tue 3:00 PM PT</b> · edits until 5:00 PM PT</span>
+      <span class="metapill">🟢 App <b>LIVE · Lakebase-backed</b></span>
+    </div>
+  </header>
+
+  <!-- (2) TL;DR + GLANCE -->
+  <h2 class="section">TL;DR</h2>
+  <div class="card">
+    <p class="lede">The app is <b>deployed, running, and fully Lakebase-backed</b> — the hackathon mandate (Databricks App on <b>Lakebase</b> + ≥1 more Databricks tool) is now <b>met end-to-end and verified</b>: the app <b>writes</b> to native Lakebase Postgres (14 OLTP tables) and <b>reads</b> from 14 Lakebase synced tables, live. Our data foundation is <b>done and adversarially verified</b> — 29 Unity Catalog objects, 10,077 facilities + real NFHS-5 district health. The <b>17 designed screens are being built now</b> against the Lakebase data layer; Vector Search is indexing in the background. The biggest remaining risk is not code — it's the <b>Stage-One pass/fail submission items</b> (public repo + license, judge login, demo video, Devpost write-up), which the whole team owns.</p>
+  </div>
+  <div class="glance">
+    <div class="g"><div class="lbl">Data layer</div><div class="val"><span class="chip done">✅ Done</span></div></div>
+    <div class="g"><div class="lbl">Lakebase (mandate)</div><div class="val"><span class="chip done">✅ Done · verified</span></div></div>
+    <div class="g"><div class="lbl">UI screens (17)</div><div class="val"><span class="chip prog">🔄 Building</span></div></div>
+    <div class="g"><div class="lbl">Submission items</div><div class="val"><span class="chip alert">🚨 Team action</span></div></div>
+  </div>
+
+  <div style="height:14px"></div>
+  <div class="stats">
+    <div class="stat"><div class="n">10,077</div><div class="k">Indian facilities</div></div>
+    <div class="stat"><div class="n">706</div><div class="k">districts scored</div></div>
+    <div class="stat"><div class="n">5</div><div class="k">Databricks capabilities</div></div>
+    <div class="stat"><div class="n">512K</div><div class="k">citeable text chunks</div></div>
+  </div>
+
+  <!-- (3) WHAT IT IS -->
+  <h2 class="section">What Asclepius is</h2>
+  <div class="card">
+    <p>One Databricks App that turns ~10,077 real (but messy, unverified) Indian healthcare facilities into <b>decisions three different people can act on</b> — with every answer backed by cited source text and an honest confidence level. It unifies all four hackathon tracks (Facility Trust Desk, Medical Desert Planner, Referral Copilot, Data Readiness Desk) <b>plus</b> a clinician↔hospital marketplace, a coverage/health Atlas, and a cited AI copilot.</p>
+  </div>
+  <div class="roles">
+    <div class="role patient">
+      <div class="who">👤 Patient</div>
+      <h4>Find the right care nearby</h4>
+      <p>Enter location + symptoms → matched to facilities with the right discipline <i>and</i> evidence they offer it, on a map with a plain-language confidence level. Never a diagnosis.</p>
+    </div>
+    <div class="role clinician">
+      <div class="who">🩺 Clinician</div>
+      <h4>Find where you're needed</h4>
+      <p>Free-agent doctors upload a profile → get matched to hospitals whose gaps + surrounding-area health needs fit their discipline.</p>
+    </div>
+    <div class="role hospital">
+      <div class="who">🏨 Hospital</div>
+      <h4>Fix your coverage gaps</h4>
+      <p>Search available clinicians and upload a staff roster → get recruitment recommendations driven by what's missing + the area's disease/case mix.</p>
+    </div>
+  </div>
+
+  <!-- (4) ARCHITECTURE -->
+  <h2 class="section">Architecture &amp; Databricks stack</h2>
+  <div class="card">
+    <p>One Databricks App (AppKit, React/TypeScript) built on <b>Lakebase</b> Postgres, reading a curated Unity Catalog data layer and powered by Databricks' built-in AI. The mandate (official rules 4.2b) requires a Databricks App on Lakebase + ≥1 additional Databricks tool — we use <b>five</b> capabilities, which drives a strong "Data Relevance" score.</p>
+    <div class="stack">
+      <span class="tech mandate">Databricks App (AppKit / React + TS)</span>
+      <span class="tech mandate">Lakebase (Postgres 17)</span>
+      <span class="tech">Foundation Models</span>
+      <span class="tech">Vector Search</span>
+      <span class="tech">SQL Warehouse</span>
+      <span class="tech">Unity Catalog</span>
+      <span class="tech">FDR + NFHS-5 datasets</span>
+    </div>
+    <p style="margin-top:12px;font-size:13px;color:var(--muted)">Flow: Unity Catalog <code>workspace.app_state</code> (curated gold + dims) → synced into Lakebase Postgres <code>app_read</code> (live reads) + native <code>app</code> schema (OLTP persistence) → App serves the three role surfaces; Vector Search + Foundation Models power the cited copilot and claim verification.</p>
+  </div>
+
+  <!-- (5) WHERE WE ARE -->
+  <h2 class="section">Where we are — by workstream</h2>
+  <div class="legend">
+    <span class="chip done">✅ Done</span>
+    <span class="chip prog">🔄 In progress</span>
+    <span class="chip queue">⏳ Queued</span>
+    <span class="chip alert">🚨 Team action needed</span>
+  </div>
+  <div class="ws">
+    <div class="row">
+      <div class="meta"><div class="title">Deployed app</div><span class="chip done">✅ Live</span></div>
+      <div class="body">App is <b>deployed and running</b> on Databricks Apps — a branded shell + a live "data-path" page reading real data end-to-end. Proves the pipeline; the 17 designed screens are the next build.</div>
+    </div>
+    <div class="row">
+      <div class="meta"><div class="title">Data layer (Unity Catalog)</div><span class="chip done">✅ Done &amp; verified</span></div>
+      <div class="body"><b>29 objects, adversarially verified.</b> Facilities view (10,077; granular specialties mapped to 9 UI disciplines), gold desert/supply-need (706 districts, pre-computed scores), real NFHS-5 district + state health layers, per-district per-discipline demand, symptom→specialty routing + reference dims, and 14 OLTP persistence tables (DEC-001 accounts, no passwords). A teammate's NFHS condition→symptom→specialty map was folded in.</div>
+    </div>
+    <div class="row">
+      <div class="meta"><div class="title">Lakebase <span class="owner">(the mandate)</span></div><span class="chip done">✅ Done &amp; verified</span></div>
+      <div class="body">Project <code>projects/asclepius</code> (PG17) provisioned. The app is <b>deployed Lakebase-backed</b>: it <b>writes</b> to a native Postgres <code>app</code> schema (14 OLTP tables, created by the app service principal — DEC-001, no passwords) and <b>reads</b> from <code>app_read</code> (<b>14 synced tables</b>: facilities 10,077; deserts/health/crosswalk 706 each; demand 6,354; pincode_geo 19,586; reference dims). The SP grant on <code>app_read</code> is applied and <b>verified — the SP can read</b>. <b>The mandate is satisfied end-to-end.</b></div>
+    </div>
+    <div class="row">
+      <div class="meta"><div class="title">Vector Search <span class="owner">(AI / RAG)</span></div><span class="chip prog">🔄 Building</span></div>
+      <div class="body"><code>facility_chunks</code> — 512K citeable text chunks over 9,992 facilities — built; endpoint <code>asclepius-vs</code> online; Delta-Sync index embedding (gte-large-en) in the background. Powers cited claim-verification + semantic facility search. <b>Index still embedding.</b></div>
+    </div>
+    <div class="row">
+      <div class="meta"><div class="title">Design system &amp; shell</div><span class="chip done">✅ Foundation done</span></div>
+      <div class="body">Claude Design prototype ingested → design tokens (Bricolage Grotesque + Hanken Grotesk, role accents), a reusable component library (TrustBadge, FacilityCard, FitScoreBar, …), the app shell + Landing screen — all compiling green.</div>
+    </div>
+    <div class="row">
+      <div class="meta"><div class="title">The 17 designed screens</div><span class="chip prog">🔄 Building now</span></div>
+      <div class="body"><b>Now building</b> — a 7-agent fan-out (Patient flow, Facility Detail / Trust Desk, Atlas, Hospital coverage/recruiter, Clinician marketplace, Registry/Saved/Auth) against the live Lakebase <code>api.ts</code> hooks + the component library, then an integration gate wires the routes and compiles green. The last big push to turn the deployed shell into the full UX.</div>
+    </div>
+    <div class="row">
+      <div class="meta"><div class="title">AI copilot + citations</div><span class="chip queue">⏳ Queued</span></div>
+      <div class="body">Cited AI assistant per role (always cited source text, never a guess) — built once screens + Vector Search index land.</div>
+    </div>
+    <div class="row">
+      <div class="meta"><div class="title">Atlas GeoJSON</div><span class="chip prog">🔄 In progress</span></div>
+      <div class="body">A second work session is producing the district-level India GeoJSON for the coverage Atlas.</div>
+    </div>
+    <div class="row">
+      <div class="meta"><div class="title">Submission packaging</div><span class="chip alert">🚨 Team action</span></div>
+      <div class="body">Stage-One pass/fail items (public repo + license, judge login, demo video, Devpost write-up) — intentionally done at the very end. <b>See "What the team still needs to do."</b></div>
+    </div>
+  </div>
+
+  <!-- (6) RULES & JUDGING -->
+  <h2 class="section">Rules &amp; judging <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-weight:600">(corrected from the Official Rules PDF)</span></h2>
+  <div class="roles" style="grid-template-columns:1fr 1fr;">
+    <div class="card" style="margin:0;">
+      <h3>⏰ Deadline</h3>
+      <p>Submit on Devpost by <b>Tue 3:00 PM PT</b>. You may keep editing your submission until <b>5:00 PM PT</b>.</p>
+      <p style="font-size:13px;color:var(--muted)"><b>Mandate (4.2b):</b> must be a Databricks App built on Lakebase + ≥1 additional Databricks tool. Prizes: <b>$10k / $5k / $2.5k</b>. One submission per team, English.</p>
+    </div>
+    <div class="card" style="margin:0;">
+      <h3>⚖️ Judging — 5 equally-weighted criteria</h3>
+      <table>
+        <tr><td>Business Applicability</td></tr>
+        <tr><td>Data Relevance</td></tr>
+        <tr><td>Creativity</td></tr>
+        <tr><td>Thoroughness</td></tr>
+        <tr><td>Well-Architected <span style="color:var(--muted)">— scales at linear cost; add features without rewriting</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- (7) TEAM ACTION -->
+  <h2 class="section">🚨 What the team still needs to do</h2>
+  <div class="alertbox">
+    <h3>🚨 Stage-One pass/fail — instant DQ if missed</h3>
+    <p style="font-size:13.5px;color:#5a4a42">These are submission requirements, not code. They're being done at the very end on purpose — but the whole team owns getting them across the line before submission.</p>
+    <ul class="todo">
+      <li><span class="mark">A</span><div class="txt"><b>Make the GitHub repo PUBLIC + add an open-source LICENSE (Apache-2.0)</b>Commit history must show it was built during Jun 15–16. <span class="owner">Owner: Dakota / team</span></div></li>
+      <li><span class="mark">B</span><div class="txt"><b>Provide judge login access to the app</b>The app sits behind Databricks login — supply creds / instructions in the Devpost submission. <span class="owner">Owner: Dakota</span></div></li>
+      <li><span class="mark">C</span><div class="txt"><b>Record a ≤3-minute public demo video</b>YouTube or Vimeo, link on Devpost. <span class="owner">Owner: team</span></div></li>
+      <li><span class="mark">D</span><div class="txt"><b>Write the Devpost text description</b>The written submission narrative. <span class="owner">Owner: team</span></div></li>
+      <li><span class="mark">E</span><div class="txt"><b>Submit once, in English</b>One submission per team. Final packaging check. <span class="owner">Owner: Dakota</span></div></li>
+    </ul>
+  </div>
+
+  <!-- (8) NEXT STEPS -->
+  <h2 class="section">Next steps — path to deadline</h2>
+  <div class="card">
+    <ol class="steps">
+      <li><b>✅ Lakebase migration complete</b><span>App deployed Lakebase-backed; SP grant applied + verified. The 4.2b mandate is met end-to-end.</span></li>
+      <li><b>🔄 Build the 17 designed screens</b><span>In progress now — fan-out against the Lakebase <code>api.ts</code> hooks + component library, then compile green.</span></li>
+      <li><b>Deploy + verify the full app</b><span>Once the screens land — the demo-able product.</span></li>
+      <li><b>Wire the AI copilot + citations</b><span>Once Vector Search finishes embedding.</span></li>
+      <li><b>Stage-One submission items</b><span>Public repo + license, judge login, demo video, Devpost write-up — then submit.</span></li>
+    </ol>
+  </div>
+
+  <!-- (9) LINKS & TEAM -->
+  <h2 class="section">Links &amp; team</h2>
+  <div class="links">
+    <div class="lk"><span class="k">Deployed app</span><span class="v">https://asclepius-7474644407782881.aws.databricksapps.com</span></div>
+    <div class="lk"><span class="k">GitHub repo</span><span class="v">github.com/fulks89-hub/Databricks-2026-Hackathon-Devon</span></div>
+    <div class="lk"><span class="k">Local path</span><span class="v">C:/Users/Dakota/Projects/databricks-2026-hackathon</span></div>
+    <div class="lk"><span class="k">Planning notes</span><span class="v">Obsidian "Databricks Hackathon" vault</span></div>
+  </div>
+  <div class="team">
+    <div class="member"><div class="name">Dakota <span class="owner">· lead</span></div><div class="role-t">Builds the Asclepius app</div></div>
+    <div class="member"><div class="name">Brett</div><div class="role-t">Data engineering · owns team Databricks workspace + v2 cleaning</div></div>
+    <div class="member"><div class="name">Peter</div><div class="role-t">Data cleaning</div></div>
+    <div class="member"><div class="name">2nd work session</div><div class="role-t">District-level India GeoJSON for the Atlas</div></div>
+  </div>
+
+  <footer>
+    Asclepius — named for the Greek god of medicine and healing · Databricks "Apps &amp; Agents for Good" (Virtue Foundation) · Status as of Jun 15, 2026
+  </footer>
+</div>
+</body>
+</html>

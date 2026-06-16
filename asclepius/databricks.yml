@@ -1,0 +1,64 @@
+bundle:
+  name: asclepius
+
+variables:
+  sql_warehouse_id:
+    description: SQL Warehouse ID
+  serving_endpoint_name:
+    description: Serving endpoint name
+  postgres_branch:
+    description: Lakebase Postgres branch
+  postgres_database:
+    description: Lakebase Postgres database
+  postgres_project:
+    description: Lakebase Postgres project
+
+resources:
+  apps:
+    app:
+      name: "asclepius"
+      description: "Asclepius - Virtue Foundation health-facility intelligence (analytics + Foundation Models)"
+      source_code_path: ./
+      user_api_scopes:
+        - serving.serving-endpoints
+
+      # The resources which this app has access to.
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.sql_warehouse_id}
+            permission: CAN_USE
+        - name: serving-endpoint
+          serving_endpoint:
+            name: ${var.serving_endpoint_name}
+            permission: CAN_QUERY
+        - name: serving-endpoint-opus
+          serving_endpoint:
+            name: databricks-claude-opus-4-8
+            permission: CAN_QUERY
+        - name: serving-endpoint-cheap
+          serving_endpoint:
+            name: databricks-meta-llama-3-1-8b-instruct
+            permission: CAN_QUERY
+        - name: serving-endpoint-embed
+          serving_endpoint:
+            name: databricks-gte-large-en
+            permission: CAN_QUERY
+        - name: postgres
+          postgres:
+            branch: ${var.postgres_branch}
+            database: ${var.postgres_database}
+            permission: CAN_CONNECT_AND_CREATE
+
+targets:
+  default:
+    default: true
+    workspace:
+      host: https://dbc-790fa8be-b5e2.cloud.databricks.com
+
+    variables:
+      sql_warehouse_id: 5465d8c2d7be7f58
+      serving_endpoint_name: databricks-meta-llama-3-3-70b-instruct
+      postgres_branch: projects/asclepius/branches/production
+      postgres_database: projects/asclepius/branches/production/databases/databricks-postgres
+      postgres_project: projects/asclepius

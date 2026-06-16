@@ -1,0 +1,375 @@
+@import "@databricks/appkit-ui/styles.css";
+
+/* Fonts (Bricolage Grotesque display + Hanken Grotesk UI) are loaded via a
+   <link> in client/index.html — a non-leading CSS @import would be ignored by
+   the browser, so the link tag is the reliable path. Families are wired to
+   Tailwind/AppKit through --font-display / --font-sans below. */
+
+/* =====================================================================
+   Asclepius design tokens — lifted from DESIGN_SYSTEM.md (Asclepius.dc.html).
+   Every component reads var(--asc-*). Load once at the app root.
+   ===================================================================== */
+:root {
+  /* ---- Typography ---- */
+  --asc-font-display: "Bricolage Grotesque", system-ui, sans-serif; /* headings, numerals, logo */
+  --asc-font-body: "Hanken Grotesk", system-ui, sans-serif;          /* everything else */
+  --asc-fw-regular: 400;
+  --asc-fw-medium: 500;
+  --asc-fw-semibold: 600;
+  --asc-fw-bold: 700;
+  --asc-fw-extra: 800; /* Bricolage opsz axis 12..96 */
+
+  /* ---- Neutrals / surfaces ---- */
+  --asc-bg: #faf6f0;            /* app canvas (paper) */
+  --asc-bg-sunken: #f2ece3;     /* map plates */
+  --asc-surface: #ffffff;       /* cards */
+  --asc-surface-warm: #fcfaf6;  /* detail sidebar, inputs */
+  --asc-surface-warm2: #fdfbf8; /* claim rows */
+  --asc-ink: #241f1a;           /* primary headings (ink) */
+  --asc-ink-body: #2b2722;      /* body default */
+  --asc-text: #3a3026;          /* labels */
+  --asc-text-strong: #4a4034;
+  --asc-text-muted: #5c5347;    /* paragraphs */
+  --asc-text-soft: #6e665b;     /* secondary */
+  --asc-text-faint: #857b6c;
+  --asc-text-faint2: #938a7c;   /* meta */
+  --asc-text-disabled: #a79d8e; /* captions, placeholders */
+  --asc-placeholder: #c9bca8;   /* empty-state icons */
+
+  /* ---- Borders / dividers ---- */
+  --asc-border: #e7dfd2;        /* default control border */
+  --asc-border-card: #ece4d8;   /* card border */
+  --asc-border-2: #ede5d9;
+  --asc-divider: #eee7dc;       /* hairline */
+  --asc-divider-2: #f0eae0;     /* row separators */
+  --asc-divider-3: #f5efe6;
+  --asc-border-dashed: #dcd2c2; /* empty-state dashed */
+  --asc-track: #f0eae0;         /* progress-bar track */
+
+  /* ---- Role accents ---- */
+  --asc-patient: #e0714c;
+  --asc-patient-press: #c0552f;
+  --asc-patient-deep: #b2503c;
+  --asc-patient-tint: #fbe8e0;  /* soft bg */
+  --asc-patient-tint2: #fcf1eb;
+  --asc-patient-band: #fcf7f3;  /* detail header band */
+  --asc-patient-border: #f1d0c4;
+
+  --asc-clinician: #2e7d67;
+  --asc-clinician-tint: #e4efea;
+  --asc-clinician-tint2: #f4f8f5; /* detail band, assistant header */
+  --asc-clinician-border: #cfe3db;
+
+  --asc-hospital: #3b6fb0;
+  --asc-hospital-press: #2e558c;
+  --asc-hospital-tint: #e3ecf6;
+  --asc-hospital-tint2: #f7fafd;
+  --asc-hospital-border: #ccdaec;
+
+  /* ---- Trust states (trustMeta) ---- */
+  --asc-trust-verified: #2e7d67;
+  --asc-trust-verified-bg: #e4efea;
+  --asc-trust-review: #9a6a12;
+  --asc-trust-review-bg: #f6ebd6;
+  --asc-trust-unverified: #857b6c;
+  --asc-trust-unverified-bg: #eee9df;
+  /* map-pin variants of trust (saturated for plates) */
+  --asc-pin-verified: #2e7d67;
+  --asc-pin-review: #b07a1e;
+  --asc-pin-unverified: #a99c88;
+
+  /* ---- Claim / evidence states (claimMeta) ---- */
+  --asc-claim-verified: #2e7d67;
+  --asc-claim-verified-bg: #e4efea;
+  --asc-claim-claimed: #9a6a12;
+  --asc-claim-claimed-bg: #f6ebd6;
+  --asc-claim-noevidence: #b2503c;
+  --asc-claim-noevidence-bg: #f6e2dc;
+
+  /* ---- Status / urgency / referral semantics ---- */
+  --asc-danger: #b2503c;
+  --asc-danger-bg: #f6e2dc;
+  --asc-warn: #9a6a12;
+  --asc-warn-bg: #f6ebd6;
+  --asc-warn-amber: #b07a1e;  /* freshness chevrons */
+  --asc-warn-dot: #d7a93e;    /* caveat icons */
+  --asc-success: #2e7d67;
+  --asc-success-bg: #e4efea;
+  --asc-info: #3b6fb0;
+  --asc-info-bg: #e3ecf6;
+  --asc-accent-gold: #c99a2e; /* lightbulb */
+  --asc-fit-good: #5b8c3e;    /* "Good match" tier */
+  --asc-gold-deep: #b07a1e;
+  --asc-gold-surface: #fbf6ee;
+  --asc-gold-surface-border: #efe3cf; /* "why" panels, evidence callouts */
+  --asc-evidence-bg: #fcf8f2;
+  --asc-evidence-rule: #e0714c;       /* quote left-rule */
+
+  /* ---- Atlas / choropleth ramps ---- */
+  --asc-atlas-cov-lo: rgb(234, 243, 238);  /* coverage ramp c1 → */
+  --asc-atlas-cov-hi: rgb(18, 78, 61);     /* → c2  (gamma 0.8) */
+  --asc-atlas-health-lo: rgb(252, 239, 231); /* prevalence ramp c1 → */
+  --asc-atlas-health-hi: rgb(140, 45, 26);   /* → c2  (gamma 0.85) */
+  --asc-atlas-stroke: #fcf8f2;             /* state outline */
+  --asc-atlas-stroke-hover: #241f1a;
+  --asc-atlas-marker: #e0714c;             /* facility dots */
+
+  /* ---- Map plate grid ---- */
+  --asc-grid-warm: #e7dfd2;
+  --asc-grid-warm2: #e8e0d3;
+  --asc-grid-clin: #e2e6dd;
+  --asc-grid-hosp: #e1e8f1;
+  --asc-grid-ring: #cfc3b0; /* radius rings (dashed) */
+
+  /* ---- Dark surfaces (trays/toasts/cmd) ---- */
+  --asc-dark: #241f1a;
+  --asc-on-dark: #ffffff;
+  --asc-dark-muted: #b9ae9c;
+  --asc-dark-undo: #7fd0b6;                /* undo affordance */
+  --asc-scrim: rgba(36, 31, 26, 0.42);     /* modal backdrop */
+  --asc-scrim-light: rgba(36, 31, 26, 0.4);
+
+  /* ---- Radii ---- */
+  --asc-r-xs: 5px;    /* field-source tags */
+  --asc-r-sm: 9px;    /* small buttons */
+  --asc-r-md: 11px;   /* chrome buttons, inputs */
+  --asc-r-lg: 13px;   /* primary buttons */
+  --asc-r-xl: 16px;   /* tiles */
+  --asc-r-2xl: 18px;  /* panels */
+  --asc-r-3xl: 20px;  /* cards */
+  --asc-r-4xl: 22px;  /* large cards / modals */
+  --asc-r-5xl: 24px;  /* detail card */
+  --asc-r-pill: 999px;
+  --asc-r-circle: 50%;
+
+  /* ---- Shadows ---- */
+  --asc-shadow-hair: 0 1px 2px rgba(43, 39, 34, 0.04);                                       /* resting card */
+  --asc-shadow-card: 0 1px 2px rgba(43, 39, 34, 0.04), 0 18px 40px -28px rgba(43, 39, 34, 0.3); /* raised card */
+  --asc-shadow-detail: 0 1px 2px rgba(43, 39, 34, 0.04), 0 24px 50px -34px rgba(43, 39, 34, 0.32);
+  --asc-shadow-modal: 0 34px 80px -28px rgba(0, 0, 0, 0.55);
+  --asc-shadow-cmdk: 0 34px 80px -24px rgba(0, 0, 0, 0.5);
+  --asc-shadow-pop: 0 18px 40px -16px rgba(0, 0, 0, 0.5);   /* trays */
+  --asc-shadow-notif: 0 28px 64px -22px rgba(43, 39, 34, 0.45);
+  --asc-shadow-assist: 0 30px 68px -22px rgba(43, 39, 34, 0.5);
+  --asc-shadow-float: 0 14px 32px -10px rgba(46, 125, 103, 0.7); /* FAB (clinician green) */
+  --asc-shadow-cta-patient: 0 12px 26px -10px rgba(224, 113, 76, 0.7);
+  --asc-shadow-cta-clinician: 0 12px 26px -10px rgba(46, 125, 103, 0.65);
+  --asc-shadow-cta-hospital: 0 12px 26px -10px rgba(59, 111, 176, 0.6);
+  --asc-shadow-logo: 0 4px 12px -4px rgba(46, 125, 103, 0.6);
+
+  /* ---- Blur ---- */
+  --asc-blur-bar: blur(14px);   /* sticky top bar */
+  --asc-blur-glass: blur(6px);  /* map overlays */
+  --asc-blur-modal: blur(2px);  /* scrim */
+
+  /* ---- Z-index ---- */
+  --asc-z-tray: 90;
+  --asc-z-undo: 91;
+  --asc-z-assistant: 95;
+  --asc-z-fab: 96;
+  --asc-z-notif: 97;
+  --asc-z-modal: 98;
+  --asc-z-cmdk: 99;
+  --asc-z-bar: 60;
+
+  /* ---- Selection / range ---- */
+  --asc-selection: #e0714c33;
+  --asc-range-track: #e7dfd2;
+
+  /* =================================================================
+     AppKit semantic remap — point AppKit-ui's tokens at the warm
+     Asclepius palette so Card/Button/Input/Badge adopt it automatically.
+     These names (--background, --primary, …) are consumed by AppKit's
+     `@theme inline` (→ bg-background, text-foreground, etc.). Keep names.
+     ================================================================= */
+  --radius: 0.8125rem; /* 13px → --asc-r-lg, AppKit's default control radius */
+
+  --background: var(--asc-bg);
+  --foreground: var(--asc-ink-body);
+  --card: var(--asc-surface);
+  --card-foreground: var(--asc-ink-body);
+  --popover: var(--asc-surface);
+  --popover-foreground: var(--asc-ink-body);
+
+  --primary: var(--asc-patient);          /* default accent = patient orange */
+  --primary-foreground: #ffffff;
+  --secondary: var(--asc-surface-warm);
+  --secondary-foreground: var(--asc-text);
+  --muted: var(--asc-bg-sunken);
+  --muted-foreground: var(--asc-text-soft);
+  --accent: var(--asc-clinician-tint);
+  --accent-foreground: var(--asc-text);
+
+  --destructive: var(--asc-danger);
+  --destructive-foreground: #ffffff;
+  --success: var(--asc-success);
+  --success-foreground: #ffffff;
+  --warning: var(--asc-warn);
+  --warning-foreground: #ffffff;
+
+  --border: var(--asc-border);
+  --input: var(--asc-border);
+  --ring: var(--asc-patient);
+
+  --sidebar: var(--asc-surface-warm);
+  --sidebar-foreground: var(--asc-ink-body);
+  --sidebar-primary: var(--asc-patient);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--asc-clinician-tint);
+  --sidebar-accent-foreground: var(--asc-text);
+  --sidebar-border: var(--asc-border);
+  --sidebar-ring: var(--asc-patient);
+}
+
+/* Asclepius is a light-only, warm-paper product. Force the warm palette to win
+   over AppKit's dark theme in EVERY case — class-based (.dark) AND OS-level
+   (prefers-color-scheme: dark) — and independent of stylesheet source order.
+   AppKit's Vite plugin can re-inject its token blocks AFTER our @import, so an
+   equal-specificity :root override loses the cascade (verified: our --card came
+   last in source yet AppKit's dark #18181b still won at runtime, rendering Cards
+   black). `:root:root` has specificity (0,2,0), which dominates AppKit's
+   :root / .dark / @media:root token blocks (all 0,1,0) WITHOUT relying on order
+   or on a media query matching. One unconditional block locks the light theme. */
+:root:root {
+  --background: var(--asc-bg);
+  --foreground: var(--asc-ink-body);
+  --card: var(--asc-surface);
+  --card-foreground: var(--asc-ink-body);
+  --popover: var(--asc-surface);
+  --popover-foreground: var(--asc-ink-body);
+  --primary: var(--asc-patient);
+  --primary-foreground: #ffffff;
+  --secondary: var(--asc-surface-warm);
+  --secondary-foreground: var(--asc-text);
+  --muted: var(--asc-bg-sunken);
+  --muted-foreground: var(--asc-text-soft);
+  --accent: var(--asc-clinician-tint);
+  --accent-foreground: var(--asc-text);
+  --destructive: var(--asc-danger);
+  --destructive-foreground: #ffffff;
+  --success: var(--asc-success);
+  --success-foreground: #ffffff;
+  --warning: var(--asc-warn);
+  --warning-foreground: #ffffff;
+  --border: var(--asc-border);
+  --input: var(--asc-border);
+  --ring: var(--asc-patient);
+  --sidebar: var(--asc-surface-warm);
+  --sidebar-foreground: var(--asc-ink-body);
+  --sidebar-primary: var(--asc-patient);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--asc-clinician-tint);
+  --sidebar-accent-foreground: var(--asc-text);
+  --sidebar-border: var(--asc-border);
+  --sidebar-ring: var(--asc-patient);
+}
+
+/* Register the font families as Tailwind theme tokens so `font-sans` /
+   `font-display` utilities resolve, and AppKit's body inherits them. */
+@theme inline {
+  --font-sans: var(--asc-font-body);
+  --font-display: var(--asc-font-display);
+}
+
+/* Paint the paper canvas. The --background token is mapped to --asc-bg above,
+   but nothing consumed it on the root, so the page fell through to AppKit's
+   dark default (black) under OS dark mode. Force light + the paper background
+   on html/body AND the .asc-app shell wrapper (rendered on every route in
+   App.tsx) so the warm canvas shows regardless of the system color scheme. */
+html {
+  color-scheme: light;
+  background: var(--asc-bg);
+}
+
+/* Apply Hanken to body (UI), Bricolage to headings + the display utility. */
+body {
+  font-family: var(--asc-font-body);
+  background: var(--asc-bg);
+  color: var(--asc-ink-body);
+}
+
+.asc-app {
+  background: var(--asc-bg);
+  color: var(--asc-ink-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-display {
+  font-family: var(--asc-font-display);
+}
+
+/* =====================================================================
+   Motion keyframes (verbatim from prototype; ascToast transl()→translate() bug fixed)
+   ===================================================================== */
+@keyframes ascFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ascPop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes ascPulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  70% { transform: scale(2.4); opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes ascToast {
+  from { opacity: 0; transform: translate(-50%, 14px); }
+  to { opacity: 1; transform: translateX(-50%); }
+}
+@keyframes ascSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* =====================================================================
+   Globals lifted from the prototype <style>
+   ===================================================================== */
+::selection {
+  background: var(--asc-selection);
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: var(--asc-r-pill);
+  background: var(--asc-range-track);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--asc-patient);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(43, 39, 34, 0.25);
+  cursor: pointer;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #e2d9ca;
+  border-radius: var(--asc-r-pill);
+  border: 3px solid var(--asc-bg);
+}
+/* Command-palette + notification row hover (prototype style-hover #F7F2EA). */
+.asc-cmdk-row:hover {
+  background: #f7f2ea;
+}
+
+@media print {
+  .asc-noprint {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+}
