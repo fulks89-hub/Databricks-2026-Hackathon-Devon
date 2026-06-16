@@ -1,0 +1,748 @@
+geojson_district,geojson_state,nfhs_district,nfhs_state,match_status,confidence,method
+Nicobars,Andaman and Nicobar Islands,Nicobars,Andaman & Nicobar Islands,exact,1.0000,exact_normalized
+North and Middle Andaman,Andaman and Nicobar Islands,North & Middle Andaman,Andaman & Nicobar Islands,exact,1.0000,exact_normalized
+South Andaman,Andaman and Nicobar Islands,South Andaman,Andaman & Nicobar Islands,exact,1.0000,exact_normalized
+Anantapuramu,Andhra Pradesh,Anantapur,Andhra Pradesh,fuzzy,0.8571,fuzzy_ratio
+Chittoor,Andhra Pradesh,Chittoor,Andhra Pradesh,exact,1.0000,exact_normalized
+East Godavari,Andhra Pradesh,East Godavari,Andhra Pradesh,exact,1.0000,exact_normalized
+Guntur,Andhra Pradesh,Guntur,Andhra Pradesh,exact,1.0000,exact_normalized
+Krishna,Andhra Pradesh,Krishna,Andhra Pradesh,exact,1.0000,exact_normalized
+Kurnool,Andhra Pradesh,Kurnool,Andhra Pradesh,exact,1.0000,exact_normalized
+Prakasam,Andhra Pradesh,Prakasam,Andhra Pradesh,exact,1.0000,exact_normalized
+Sri Potti Sriramulu Nellore,Andhra Pradesh,Sri Potti Sriramulu Nello,Andhra Pradesh,fuzzy,0.9615,fuzzy_ratio
+Srikakulam,Andhra Pradesh,Srikakulam,Andhra Pradesh,exact,1.0000,exact_normalized
+Visakhapatnam,Andhra Pradesh,Visakhapatnam,Andhra Pradesh,exact,1.0000,exact_normalized
+Vizianagaram,Andhra Pradesh,Vizianagaram,Andhra Pradesh,exact,1.0000,exact_normalized
+West Godavari,Andhra Pradesh,West Godavari,Andhra Pradesh,exact,1.0000,exact_normalized
+YSR,Andhra Pradesh,Y.S.R.,Andhra Pradesh,alias,0.9500,alias_known
+Anjaw,Arunachal Pradesh,Anjaw,Arunachal Pradesh,exact,1.0000,exact_normalized
+Changlang,Arunachal Pradesh,Changlang,Arunachal Pradesh,exact,1.0000,exact_normalized
+Upper Dibang Valley,Arunachal Pradesh,Dibang Valley,Arunachal Pradesh,alias,0.9500,manual_alias
+East Kameng,Arunachal Pradesh,East Kameng,Arunachal Pradesh,exact,1.0000,exact_normalized
+East Siang,Arunachal Pradesh,East Siang,Arunachal Pradesh,exact,1.0000,exact_normalized
+Kra Daadi,Arunachal Pradesh,Kra Daadi,Arunachal Pradesh,exact,1.0000,exact_normalized
+Kurung Kumey,Arunachal Pradesh,Kurung Kumey,Arunachal Pradesh,exact,1.0000,exact_normalized
+Lohit,Arunachal Pradesh,Lohit,Arunachal Pradesh,exact,1.0000,exact_normalized
+Longding,Arunachal Pradesh,Longding,Arunachal Pradesh,exact,1.0000,exact_normalized
+Lower Dibang Valley,Arunachal Pradesh,Lower Dibang Valley,Arunachal Pradesh,exact,1.0000,exact_normalized
+Lower Subansiri,Arunachal Pradesh,Lower Subansiri,Arunachal Pradesh,exact,1.0000,exact_normalized
+Namsai,Arunachal Pradesh,Namsai,Arunachal Pradesh,exact,1.0000,exact_normalized
+Papum Pare,Arunachal Pradesh,Papum Pare,Arunachal Pradesh,exact,1.0000,exact_normalized
+Siang,Arunachal Pradesh,Siang,Arunachal Pradesh,exact,1.0000,exact_normalized
+Tawang,Arunachal Pradesh,Tawang,Arunachal Pradesh,exact,1.0000,exact_normalized
+Tirap,Arunachal Pradesh,Tirap,Arunachal Pradesh,exact,1.0000,exact_normalized
+Upper Siang,Arunachal Pradesh,Upper Siang,Arunachal Pradesh,exact,1.0000,exact_normalized
+Upper Subansiri,Arunachal Pradesh,Upper Subansiri,Arunachal Pradesh,exact,1.0000,exact_normalized
+West Kameng,Arunachal Pradesh,West Kameng,Arunachal Pradesh,exact,1.0000,exact_normalized
+West Siang,Arunachal Pradesh,West Siang,Arunachal Pradesh,exact,1.0000,exact_normalized
+Baksa,Assam,Baksa,Assam,exact,1.0000,exact_normalized
+Barpeta,Assam,Barpeta,Assam,exact,1.0000,exact_normalized
+Biswanath,Assam,Biswanath,Assam,exact,1.0000,exact_normalized
+Bongaigaon,Assam,Bongaigaon,Assam,exact,1.0000,exact_normalized
+Cachar,Assam,Cachar,Assam,exact,1.0000,exact_normalized
+Charaideo,Assam,Charaideo,Assam,exact,1.0000,exact_normalized
+Chirang,Assam,Chirang,Assam,exact,1.0000,exact_normalized
+Darrang,Assam,Darrang,Assam,exact,1.0000,exact_normalized
+Dhemaji,Assam,Dhemaji,Assam,exact,1.0000,exact_normalized
+Dhubri,Assam,Dhubri,Assam,exact,1.0000,exact_normalized
+Dibrugarh,Assam,Dibrugarh,Assam,exact,1.0000,exact_normalized
+Dima Hasao,Assam,Dima Hasao,Assam,exact,1.0000,exact_normalized
+Goalpara,Assam,Goalpara,Assam,exact,1.0000,exact_normalized
+Golaghat,Assam,Golaghat,Assam,exact,1.0000,exact_normalized
+Hailakandi,Assam,Hailakandi,Assam,exact,1.0000,exact_normalized
+Hojai,Assam,Hojai,Assam,exact,1.0000,exact_normalized
+Jorhat,Assam,Jorhat,Assam,exact,1.0000,exact_normalized
+Kamrup,Assam,Kamrup,Assam,exact,1.0000,exact_normalized
+Kamrup Metropolitan,Assam,Kamrup Metropolitan,Assam,exact,1.0000,exact_normalized
+Karbi Anglong,Assam,Karbi Anglong,Assam,exact,1.0000,exact_normalized
+Karimganj,Assam,Karimganj,Assam,exact,1.0000,exact_normalized
+Kokrajhar,Assam,Kokrajhar,Assam,exact,1.0000,exact_normalized
+Lakhimpur,Assam,Lakhimpur,Assam,exact,1.0000,exact_normalized
+Majuli,Assam,Majuli,Assam,exact,1.0000,exact_normalized
+Morigaon,Assam,Morigaon,Assam,exact,1.0000,exact_normalized
+Nagaon,Assam,Nagaon,Assam,exact,1.0000,exact_normalized
+Nalbari,Assam,Nalbari,Assam,exact,1.0000,exact_normalized
+Sivasagar,Assam,Sivasagar,Assam,exact,1.0000,exact_normalized
+Sonitpur,Assam,Sonitpur,Assam,exact,1.0000,exact_normalized
+South Salmara Mankachar,Assam,South Salmara Mancachar,Assam,fuzzy,0.9565,fuzzy_ratio
+Tinsukia,Assam,Tinsukia,Assam,exact,1.0000,exact_normalized
+Udalguri,Assam,Udalguri,Assam,exact,1.0000,exact_normalized
+West Karbi Anglong,Assam,West Karbi Anglong,Assam,exact,1.0000,exact_normalized
+Araria,Bihar,Araria,Bihar,exact,1.0000,exact_normalized
+Arwal,Bihar,Arwal,Bihar,exact,1.0000,exact_normalized
+Aurangabad,Bihar,Aurangabad,Bihar,exact,1.0000,exact_normalized
+Banka,Bihar,Banka,Bihar,exact,1.0000,exact_normalized
+Begusarai,Bihar,Begusarai,Bihar,exact,1.0000,exact_normalized
+Bhagalpur,Bihar,Bhagalpur,Bihar,exact,1.0000,exact_normalized
+Bhojpur,Bihar,Bhojpur,Bihar,exact,1.0000,exact_normalized
+Buxar,Bihar,Buxar,Bihar,exact,1.0000,exact_normalized
+Darbhanga,Bihar,Darbhanga,Bihar,exact,1.0000,exact_normalized
+Gaya,Bihar,Gaya,Bihar,exact,1.0000,exact_normalized
+Gopalganj,Bihar,Gopalganj,Bihar,exact,1.0000,exact_normalized
+Jamui,Bihar,Jamui,Bihar,exact,1.0000,exact_normalized
+Jehanabad,Bihar,Jehanabad,Bihar,exact,1.0000,exact_normalized
+Kaimur,Bihar,Kaimur (Bhabua),Bihar,alias,0.9500,alias_known
+Katihar,Bihar,Katihar,Bihar,exact,1.0000,exact_normalized
+Khagaria,Bihar,Khagaria,Bihar,exact,1.0000,exact_normalized
+Kishanganj,Bihar,Kishanganj,Bihar,exact,1.0000,exact_normalized
+Lakhisarai,Bihar,Lakhisarai,Bihar,exact,1.0000,exact_normalized
+Madhepura,Bihar,Madhepura,Bihar,exact,1.0000,exact_normalized
+Madhubani,Bihar,Madhubani,Bihar,exact,1.0000,exact_normalized
+Munger,Bihar,Munger,Bihar,exact,1.0000,exact_normalized
+Muzaffarpur,Bihar,Muzaffarpur,Bihar,exact,1.0000,exact_normalized
+Nalanda,Bihar,Nalanda,Bihar,exact,1.0000,exact_normalized
+Nawada,Bihar,Nawada,Bihar,exact,1.0000,exact_normalized
+West Champaran,Bihar,Pashchim Champaran,Bihar,alias,0.9500,alias_known
+Patna,Bihar,Patna,Bihar,exact,1.0000,exact_normalized
+East Champaran,Bihar,Purba Champaran,Bihar,alias,0.9500,alias_known
+Purnia,Bihar,Purnia,Bihar,exact,1.0000,exact_normalized
+Rohtas,Bihar,Rohtas,Bihar,exact,1.0000,exact_normalized
+Saharsa,Bihar,Saharsa,Bihar,exact,1.0000,exact_normalized
+Samastipur,Bihar,Samastipur,Bihar,exact,1.0000,exact_normalized
+Saran,Bihar,Saran,Bihar,exact,1.0000,exact_normalized
+Sheikhpura,Bihar,Sheikhpura,Bihar,exact,1.0000,exact_normalized
+Sheohar,Bihar,Sheohar,Bihar,exact,1.0000,exact_normalized
+Sitamarhi,Bihar,Sitamarhi,Bihar,exact,1.0000,exact_normalized
+Siwan,Bihar,Siwan,Bihar,exact,1.0000,exact_normalized
+Supaul,Bihar,Supaul,Bihar,exact,1.0000,exact_normalized
+Vaishali,Bihar,Vaishali,Bihar,exact,1.0000,exact_normalized
+Chandigarh,Chandigarh,Chandigarh,Chandigarh,exact,1.0000,exact_normalized
+Balod,Chhattisgarh,Balod,Chhattisgarh,exact,1.0000,exact_normalized
+Baloda Bazar,Chhattisgarh,Baloda Bazar,Chhattisgarh,exact,1.0000,exact_normalized
+Balrampur,Chhattisgarh,Balrampur,Chhattisgarh,exact,1.0000,exact_normalized
+Bastar,Chhattisgarh,Bastar,Chhattisgarh,exact,1.0000,exact_normalized
+Bametara,Chhattisgarh,Bemetara,Chhattisgarh,fuzzy,0.8750,fuzzy_ratio
+Bijapur,Chhattisgarh,Bijapur,Chhattisgarh,exact,1.0000,exact_normalized
+Bilaspur,Chhattisgarh,Bilaspur,Chhattisgarh,exact,1.0000,exact_normalized
+Dakshin Bastar Dantewada,Chhattisgarh,Dantewada,Chhattisgarh,alias,0.9500,alias_known
+Dhamtari,Chhattisgarh,Dhamtari,Chhattisgarh,exact,1.0000,exact_normalized
+Durg,Chhattisgarh,Durg,Chhattisgarh,exact,1.0000,exact_normalized
+Gariaband,Chhattisgarh,Gariyaband,Chhattisgarh,fuzzy,0.9474,fuzzy_ratio
+Janjgir Champa,Chhattisgarh,Janjgir - Champa,Chhattisgarh,exact,1.0000,exact_normalized
+Jashpur,Chhattisgarh,Jashpur,Chhattisgarh,exact,1.0000,exact_normalized
+Kabeerdham,Chhattisgarh,Kabeerdham,Chhattisgarh,exact,1.0000,exact_normalized
+Kondagaon,Chhattisgarh,Kodagaon,Chhattisgarh,fuzzy,0.9412,fuzzy_ratio
+Korba,Chhattisgarh,Korba,Chhattisgarh,exact,1.0000,exact_normalized
+Koriya,Chhattisgarh,Koriya,Chhattisgarh,exact,1.0000,exact_normalized
+Mahasamund,Chhattisgarh,Mahasamund,Chhattisgarh,exact,1.0000,exact_normalized
+Mungeli,Chhattisgarh,Mungeli,Chhattisgarh,exact,1.0000,exact_normalized
+Narayanpur,Chhattisgarh,Narayanpur,Chhattisgarh,exact,1.0000,exact_normalized
+Raigarh,Chhattisgarh,Raigarh,Chhattisgarh,exact,1.0000,exact_normalized
+Raipur,Chhattisgarh,Raipur,Chhattisgarh,exact,1.0000,exact_normalized
+Rajnandgaon,Chhattisgarh,Rajnandgaon,Chhattisgarh,exact,1.0000,exact_normalized
+Sukma,Chhattisgarh,Sukma,Chhattisgarh,exact,1.0000,exact_normalized
+Surajpur,Chhattisgarh,Surajpur,Chhattisgarh,exact,1.0000,exact_normalized
+Surguja,Chhattisgarh,Surguja,Chhattisgarh,exact,1.0000,exact_normalized
+Uttar Bastar Kanker,Chhattisgarh,Uttar Bastar Kanker,Chhattisgarh,exact,1.0000,exact_normalized
+Dadra and Nagar Haveli,Dadra and Nagar Haveli,Dadra & Nagar Haveli,Dadra and Nagar Haveli & Daman and Diu,exact,1.0000,exact_normalized
+Daman,Dadra and Nagar Haveli,Daman,Dadra and Nagar Haveli & Daman and Diu,exact,1.0000,exact_normalized
+Diu,Dadra and Nagar Haveli,Diu,Dadra and Nagar Haveli & Daman and Diu,exact,1.0000,exact_normalized
+North Goa,Goa,North Goa,Goa,exact,1.0000,exact_normalized
+South Goa,Goa,South Goa,Goa,exact,1.0000,exact_normalized
+Ahmedabad,Gujarat,Ahmadabad,Gujarat,fuzzy,0.8889,fuzzy_ratio
+Amreli,Gujarat,Amreli,Gujarat,exact,1.0000,exact_normalized
+Anand,Gujarat,Anand,Gujarat,exact,1.0000,exact_normalized
+Aravalli,Gujarat,Aravali,Gujarat,fuzzy,0.9333,fuzzy_ratio
+Banaskantha,Gujarat,Banas Kantha,Gujarat,fuzzy,0.9565,fuzzy_ratio
+Bharuch,Gujarat,Bharuch,Gujarat,exact,1.0000,exact_normalized
+Bhavnagar,Gujarat,Bhavnagar,Gujarat,exact,1.0000,exact_normalized
+Botad,Gujarat,Botad,Gujarat,exact,1.0000,exact_normalized
+Chhota Udaipur,Gujarat,Chhota Udaipur,Gujarat,exact,1.0000,exact_normalized
+Devbhumi Dwarka,Gujarat,Devbhumi Dwarka,Gujarat,exact,1.0000,exact_normalized
+Dahod,Gujarat,Dohad,Gujarat,alias,0.9500,alias_known
+Gandhinagar,Gujarat,Gandhinagar,Gujarat,exact,1.0000,exact_normalized
+Gir Somnath,Gujarat,Gir Somnath,Gujarat,exact,1.0000,exact_normalized
+Jamnagar,Gujarat,Jamnagar,Gujarat,exact,1.0000,exact_normalized
+Junagadh,Gujarat,Junagadh,Gujarat,exact,1.0000,exact_normalized
+Kutch,Gujarat,Kachchh,Gujarat,alias,0.9500,alias_known
+Kheda,Gujarat,Kheda,Gujarat,exact,1.0000,exact_normalized
+Mehsana,Gujarat,Mahesana,Gujarat,alias,0.9500,alias_known
+Mahisagar,Gujarat,Mahisagar,Gujarat,exact,1.0000,exact_normalized
+Morbi,Gujarat,Morbi,Gujarat,exact,1.0000,exact_normalized
+Narmada,Gujarat,Narmada,Gujarat,exact,1.0000,exact_normalized
+Navsari,Gujarat,Navsari,Gujarat,exact,1.0000,exact_normalized
+Panchmahal,Gujarat,Panch Mahals,Gujarat,fuzzy,0.9091,fuzzy_ratio
+Patan,Gujarat,Patan,Gujarat,exact,1.0000,exact_normalized
+Porbandar,Gujarat,Porbandar,Gujarat,exact,1.0000,exact_normalized
+Rajkot,Gujarat,Rajkot,Gujarat,exact,1.0000,exact_normalized
+Sabarkantha,Gujarat,Sabar Kantha,Gujarat,fuzzy,0.9565,fuzzy_ratio
+Surat,Gujarat,Surat,Gujarat,exact,1.0000,exact_normalized
+Surendranagar,Gujarat,Surendranagar,Gujarat,exact,1.0000,exact_normalized
+Tapi,Gujarat,Tapi,Gujarat,exact,1.0000,exact_normalized
+Dang,Gujarat,The Dangs,Gujarat,alias,0.9500,alias_known
+Vadodara,Gujarat,Vadodara,Gujarat,exact,1.0000,exact_normalized
+Valsad,Gujarat,Valsad,Gujarat,exact,1.0000,exact_normalized
+Ambala,Haryana,Ambala,Haryana,exact,1.0000,exact_normalized
+Bhiwani,Haryana,Bhiwani,Haryana,exact,1.0000,exact_normalized
+Charkhi Dadri,Haryana,Charkhi Dadri,Haryana,exact,1.0000,exact_normalized
+Faridabad,Haryana,Faridabad,Haryana,exact,1.0000,exact_normalized
+Fatehabad,Haryana,Fatehabad,Haryana,exact,1.0000,exact_normalized
+Gurugram,Haryana,Gurgaon,Haryana,alias,0.9500,alias_known
+Hisar,Haryana,Hisar,Haryana,exact,1.0000,exact_normalized
+Jhajjar,Haryana,Jhajjar,Haryana,exact,1.0000,exact_normalized
+Jind,Haryana,Jind,Haryana,exact,1.0000,exact_normalized
+Kaithal,Haryana,Kaithal,Haryana,exact,1.0000,exact_normalized
+Karnal,Haryana,Karnal,Haryana,exact,1.0000,exact_normalized
+Kurukshetra,Haryana,Kurukshetra,Haryana,exact,1.0000,exact_normalized
+Mahendragarh,Haryana,Mahendragarh,Haryana,exact,1.0000,exact_normalized
+Nuh,Haryana,Mewat,Haryana,alias,0.9500,alias_known
+Palwal,Haryana,Palwal,Haryana,exact,1.0000,exact_normalized
+Panchkula,Haryana,Panchkula,Haryana,exact,1.0000,exact_normalized
+Panipat,Haryana,Panipat,Haryana,exact,1.0000,exact_normalized
+Rewari,Haryana,Rewari,Haryana,exact,1.0000,exact_normalized
+Rohtak,Haryana,Rohtak,Haryana,exact,1.0000,exact_normalized
+Sirsa,Haryana,Sirsa,Haryana,exact,1.0000,exact_normalized
+Sonipat,Haryana,Sonipat,Haryana,exact,1.0000,exact_normalized
+Yamunanagar,Haryana,Yamunanagar,Haryana,exact,1.0000,exact_normalized
+Bilaspur,Himachal Pradesh,Bilaspur,Himachal Pradesh,exact,1.0000,exact_normalized
+Chamba,Himachal Pradesh,Chamba,Himachal Pradesh,exact,1.0000,exact_normalized
+Hamirpur,Himachal Pradesh,Hamirpur,Himachal Pradesh,exact,1.0000,exact_normalized
+Kangra,Himachal Pradesh,Kangra,Himachal Pradesh,exact,1.0000,exact_normalized
+Kinnaur,Himachal Pradesh,Kinnaur,Himachal Pradesh,exact,1.0000,exact_normalized
+Kullu,Himachal Pradesh,Kullu,Himachal Pradesh,exact,1.0000,exact_normalized
+Lahaul and Spiti,Himachal Pradesh,Lahul & Spiti,Himachal Pradesh,fuzzy,0.9677,fuzzy_ratio
+Mandi,Himachal Pradesh,Mandi,Himachal Pradesh,exact,1.0000,exact_normalized
+Shimla,Himachal Pradesh,Shimla,Himachal Pradesh,exact,1.0000,exact_normalized
+Sirmaur,Himachal Pradesh,Sirmaur,Himachal Pradesh,exact,1.0000,exact_normalized
+Solan,Himachal Pradesh,Solan,Himachal Pradesh,exact,1.0000,exact_normalized
+Una,Himachal Pradesh,Una,Himachal Pradesh,exact,1.0000,exact_normalized
+Anantnag,Jammu and Kashmir,Anantnag,Jammu & Kashmir,exact,1.0000,exact_normalized
+Budgam,Jammu and Kashmir,Badgam,Jammu & Kashmir,alias,0.9500,alias_known
+Bandipora,Jammu and Kashmir,Bandipore,Jammu & Kashmir,fuzzy,0.8889,fuzzy_ratio
+Baramulla,Jammu and Kashmir,Baramula,Jammu & Kashmir,fuzzy,0.9412,fuzzy_ratio
+Doda,Jammu and Kashmir,Doda,Jammu & Kashmir,exact,1.0000,exact_normalized
+Ganderbal,Jammu and Kashmir,Ganderbal,Jammu & Kashmir,exact,1.0000,exact_normalized
+Jammu,Jammu and Kashmir,Jammu,Jammu & Kashmir,exact,1.0000,exact_normalized
+Kathua,Jammu and Kashmir,Kathua,Jammu & Kashmir,exact,1.0000,exact_normalized
+Kishtwar,Jammu and Kashmir,Kishtwar,Jammu & Kashmir,exact,1.0000,exact_normalized
+Kulgam,Jammu and Kashmir,Kulgam,Jammu & Kashmir,exact,1.0000,exact_normalized
+Kupwara,Jammu and Kashmir,Kupwara,Jammu & Kashmir,exact,1.0000,exact_normalized
+Pulwama,Jammu and Kashmir,Pulwama,Jammu & Kashmir,exact,1.0000,exact_normalized
+Punch,Jammu and Kashmir,Punch,Jammu & Kashmir,exact,1.0000,exact_normalized
+Rajouri,Jammu and Kashmir,Rajouri,Jammu & Kashmir,exact,1.0000,exact_normalized
+Ramban,Jammu and Kashmir,Ramban,Jammu & Kashmir,exact,1.0000,exact_normalized
+Reasi,Jammu and Kashmir,Reasi,Jammu & Kashmir,exact,1.0000,exact_normalized
+Samba,Jammu and Kashmir,Samba,Jammu & Kashmir,exact,1.0000,exact_normalized
+Shopiyan,Jammu and Kashmir,Shupiyan,Jammu & Kashmir,fuzzy,0.8750,fuzzy_ratio
+Srinagar,Jammu and Kashmir,Srinagar,Jammu & Kashmir,exact,1.0000,exact_normalized
+Udhampur,Jammu and Kashmir,Udhampur,Jammu & Kashmir,exact,1.0000,exact_normalized
+Bokaro,Jharkhand,Bokaro,Jharkhand,exact,1.0000,exact_normalized
+Chatra,Jharkhand,Chatra,Jharkhand,exact,1.0000,exact_normalized
+Deoghar,Jharkhand,Deoghar,Jharkhand,exact,1.0000,exact_normalized
+Dhanbad,Jharkhand,Dhanbad,Jharkhand,exact,1.0000,exact_normalized
+Dumka,Jharkhand,Dumka,Jharkhand,exact,1.0000,exact_normalized
+Garhwa,Jharkhand,Garhwa,Jharkhand,exact,1.0000,exact_normalized
+Giridih,Jharkhand,Giridih,Jharkhand,exact,1.0000,exact_normalized
+Godda,Jharkhand,Godda,Jharkhand,exact,1.0000,exact_normalized
+Gumla,Jharkhand,Gumla,Jharkhand,exact,1.0000,exact_normalized
+Hazaribagh,Jharkhand,Hazaribagh,Jharkhand,exact,1.0000,exact_normalized
+Jamtara,Jharkhand,Jamtara,Jharkhand,exact,1.0000,exact_normalized
+Khunti,Jharkhand,Khunti,Jharkhand,exact,1.0000,exact_normalized
+Koderma,Jharkhand,Kodarma,Jharkhand,fuzzy,0.8571,fuzzy_ratio
+Latehar,Jharkhand,Latehar,Jharkhand,exact,1.0000,exact_normalized
+Lohardaga,Jharkhand,Lohardaga,Jharkhand,exact,1.0000,exact_normalized
+Pakur,Jharkhand,Pakur,Jharkhand,exact,1.0000,exact_normalized
+Palamu,Jharkhand,Palamu,Jharkhand,exact,1.0000,exact_normalized
+West Singhbhum,Jharkhand,Pashchimi Singhbhum,Jharkhand,alias,0.9500,alias_known
+East Singhbhum,Jharkhand,Purbi Singhbhum,Jharkhand,alias,0.9500,alias_known
+Ramgarh,Jharkhand,Ramgarh,Jharkhand,exact,1.0000,exact_normalized
+Ranchi,Jharkhand,Ranchi,Jharkhand,exact,1.0000,exact_normalized
+Sahibganj,Jharkhand,Sahibganj,Jharkhand,exact,1.0000,exact_normalized
+Saraikela-Kharsawan,Jharkhand,Saraikela-Kharsawan,Jharkhand,exact,1.0000,exact_normalized
+Simdega,Jharkhand,Simdega,Jharkhand,exact,1.0000,exact_normalized
+Bagalkote,Karnataka,Bagalkot,Karnataka,fuzzy,0.9412,fuzzy_ratio
+Bengaluru Urban,Karnataka,Bangalore,Karnataka,alias,0.9500,alias_known
+Bengaluru Rural,Karnataka,Bangalore Rural,Karnataka,alias,0.9500,alias_known
+Belagavi,Karnataka,Belgaum,Karnataka,alias,0.9500,alias_known
+Ballari,Karnataka,Bellary,Karnataka,alias,0.9500,alias_known
+Bidar,Karnataka,Bidar,Karnataka,exact,1.0000,exact_normalized
+Vijayapura,Karnataka,Bijapur,Karnataka,alias,0.9500,alias_known
+Chamarajanagara,Karnataka,Chamarajanagar,Karnataka,fuzzy,0.9655,fuzzy_ratio
+Chikkaballapura,Karnataka,Chikkaballapura,Karnataka,exact,1.0000,exact_normalized
+Chikkamagaluru,Karnataka,Chikmagalur,Karnataka,fuzzy,0.8800,fuzzy_ratio
+Chitradurga,Karnataka,Chitradurga,Karnataka,exact,1.0000,exact_normalized
+Dakshina Kannada,Karnataka,Dakshina Kannada,Karnataka,exact,1.0000,exact_normalized
+Davanagere,Karnataka,Davanagere,Karnataka,exact,1.0000,exact_normalized
+Dharwad,Karnataka,Dharwad,Karnataka,exact,1.0000,exact_normalized
+Gadag,Karnataka,Gadag,Karnataka,exact,1.0000,exact_normalized
+Kalaburagi,Karnataka,Gulbarga,Karnataka,alias,0.9500,alias_known
+Hassan,Karnataka,Hassan,Karnataka,exact,1.0000,exact_normalized
+Haveri,Karnataka,Haveri,Karnataka,exact,1.0000,exact_normalized
+Kodagu,Karnataka,Kodagu,Karnataka,exact,1.0000,exact_normalized
+Kolar,Karnataka,Kolar,Karnataka,exact,1.0000,exact_normalized
+Koppal,Karnataka,Koppal,Karnataka,exact,1.0000,exact_normalized
+Mandya,Karnataka,Mandya,Karnataka,exact,1.0000,exact_normalized
+Mysuru,Karnataka,Mysore,Karnataka,alias,0.9500,alias_known
+Raichur,Karnataka,Raichur,Karnataka,exact,1.0000,exact_normalized
+Ramanagara,Karnataka,Ramanagara,Karnataka,exact,1.0000,exact_normalized
+Shivamogga,Karnataka,Shimoga,Karnataka,alias,0.9500,alias_known
+Tumakuru,Karnataka,Tumkur,Karnataka,fuzzy,0.8571,fuzzy_ratio
+Udupi,Karnataka,Udupi,Karnataka,exact,1.0000,exact_normalized
+Uttara Kannada,Karnataka,Uttara Kannada,Karnataka,exact,1.0000,exact_normalized
+Yadgir,Karnataka,Yadgir,Karnataka,exact,1.0000,exact_normalized
+Alappuzha,Kerala,Alappuzha,Kerala,exact,1.0000,exact_normalized
+Ernakulam,Kerala,Ernakulam,Kerala,exact,1.0000,exact_normalized
+Idukki,Kerala,Idukki,Kerala,exact,1.0000,exact_normalized
+Kannur,Kerala,Kannur,Kerala,exact,1.0000,exact_normalized
+Kasaragod,Kerala,Kasaragod,Kerala,exact,1.0000,exact_normalized
+Kollam,Kerala,Kollam,Kerala,exact,1.0000,exact_normalized
+Kottayam,Kerala,Kottayam,Kerala,exact,1.0000,exact_normalized
+Kozhikode,Kerala,Kozhikode,Kerala,exact,1.0000,exact_normalized
+Malappuram,Kerala,Malappuram,Kerala,exact,1.0000,exact_normalized
+Palakkad,Kerala,Palakkad,Kerala,exact,1.0000,exact_normalized
+Pathanamthitta,Kerala,Pathanamthitta,Kerala,exact,1.0000,exact_normalized
+Thiruvananthapuram,Kerala,Thiruvananthapuram,Kerala,exact,1.0000,exact_normalized
+Thrissur,Kerala,Thrissur,Kerala,exact,1.0000,exact_normalized
+Wayanad,Kerala,Wayanad,Kerala,exact,1.0000,exact_normalized
+Kargil,Ladakh,Kargil,Ladakh,exact,1.0000,exact_normalized
+Leh,Ladakh,Leh(Ladakh),Ladakh,alias,0.9500,alias_known
+Lakshadweep,Lakshadweep,Lakshadweep,Lakshadweep,exact,1.0000,exact_normalized
+Agar Malwa,Madhya Pradesh,Agar Malwa,Madhya Pradesh,exact,1.0000,exact_normalized
+Alirajpur,Madhya Pradesh,Alirajpur,Madhya Pradesh,exact,1.0000,exact_normalized
+Anuppur,Madhya Pradesh,Anuppur,Madhya Pradesh,exact,1.0000,exact_normalized
+Ashoknagar,Madhya Pradesh,Ashoknagar,Madhya Pradesh,exact,1.0000,exact_normalized
+Balaghat,Madhya Pradesh,Balaghat,Madhya Pradesh,exact,1.0000,exact_normalized
+Barwani,Madhya Pradesh,Barwani,Madhya Pradesh,exact,1.0000,exact_normalized
+Betul,Madhya Pradesh,Betul,Madhya Pradesh,exact,1.0000,exact_normalized
+Bhind,Madhya Pradesh,Bhind,Madhya Pradesh,exact,1.0000,exact_normalized
+Bhopal,Madhya Pradesh,Bhopal,Madhya Pradesh,exact,1.0000,exact_normalized
+Burhanpur,Madhya Pradesh,Burhanpur,Madhya Pradesh,exact,1.0000,exact_normalized
+Chhatarpur,Madhya Pradesh,Chhatarpur,Madhya Pradesh,exact,1.0000,exact_normalized
+Chhindwara,Madhya Pradesh,Chhindwara,Madhya Pradesh,exact,1.0000,exact_normalized
+Damoh,Madhya Pradesh,Damoh,Madhya Pradesh,exact,1.0000,exact_normalized
+Datia,Madhya Pradesh,Datia,Madhya Pradesh,exact,1.0000,exact_normalized
+Dewas,Madhya Pradesh,Dewas,Madhya Pradesh,exact,1.0000,exact_normalized
+Dhar,Madhya Pradesh,Dhar,Madhya Pradesh,exact,1.0000,exact_normalized
+Dindori,Madhya Pradesh,Dindori,Madhya Pradesh,exact,1.0000,exact_normalized
+Guna,Madhya Pradesh,Guna,Madhya Pradesh,exact,1.0000,exact_normalized
+Gwalior,Madhya Pradesh,Gwalior,Madhya Pradesh,exact,1.0000,exact_normalized
+Harda,Madhya Pradesh,Harda,Madhya Pradesh,exact,1.0000,exact_normalized
+Hoshangabad,Madhya Pradesh,Hoshangabad,Madhya Pradesh,exact,1.0000,exact_normalized
+Indore,Madhya Pradesh,Indore,Madhya Pradesh,exact,1.0000,exact_normalized
+Jabalpur,Madhya Pradesh,Jabalpur,Madhya Pradesh,exact,1.0000,exact_normalized
+Jhabua,Madhya Pradesh,Jhabua,Madhya Pradesh,exact,1.0000,exact_normalized
+Katni,Madhya Pradesh,Katni,Madhya Pradesh,exact,1.0000,exact_normalized
+Khandwa,Madhya Pradesh,Khandwa (East Nimar),Madhya Pradesh,alias,0.9500,alias_known
+Khargone,Madhya Pradesh,Khargone (West Nimar),Madhya Pradesh,alias,0.9500,alias_known
+Mandla,Madhya Pradesh,Mandla,Madhya Pradesh,exact,1.0000,exact_normalized
+Mandsaur,Madhya Pradesh,Mandsaur,Madhya Pradesh,exact,1.0000,exact_normalized
+Morena,Madhya Pradesh,Morena,Madhya Pradesh,exact,1.0000,exact_normalized
+Narsinghpur,Madhya Pradesh,Narsimhapur,Madhya Pradesh,alias,0.9500,alias_known
+Neemuch,Madhya Pradesh,Neemuch,Madhya Pradesh,exact,1.0000,exact_normalized
+Panna,Madhya Pradesh,Panna,Madhya Pradesh,exact,1.0000,exact_normalized
+Raisen,Madhya Pradesh,Raisen,Madhya Pradesh,exact,1.0000,exact_normalized
+Rajgarh,Madhya Pradesh,Rajgarh,Madhya Pradesh,exact,1.0000,exact_normalized
+Ratlam,Madhya Pradesh,Ratlam,Madhya Pradesh,exact,1.0000,exact_normalized
+Rewa,Madhya Pradesh,Rewa,Madhya Pradesh,exact,1.0000,exact_normalized
+Sagar,Madhya Pradesh,Sagar,Madhya Pradesh,exact,1.0000,exact_normalized
+Satna,Madhya Pradesh,Satna,Madhya Pradesh,exact,1.0000,exact_normalized
+Sehore,Madhya Pradesh,Sehore,Madhya Pradesh,exact,1.0000,exact_normalized
+Seoni,Madhya Pradesh,Seoni,Madhya Pradesh,exact,1.0000,exact_normalized
+Shahdol,Madhya Pradesh,Shahdol,Madhya Pradesh,exact,1.0000,exact_normalized
+Shajapur,Madhya Pradesh,Shajapur,Madhya Pradesh,exact,1.0000,exact_normalized
+Sheopur,Madhya Pradesh,Sheopur,Madhya Pradesh,exact,1.0000,exact_normalized
+Shivpuri,Madhya Pradesh,Shivpuri,Madhya Pradesh,exact,1.0000,exact_normalized
+Sidhi,Madhya Pradesh,Sidhi,Madhya Pradesh,exact,1.0000,exact_normalized
+Singrauli,Madhya Pradesh,Singrauli,Madhya Pradesh,exact,1.0000,exact_normalized
+Tikamgarh,Madhya Pradesh,Tikamgarh,Madhya Pradesh,exact,1.0000,exact_normalized
+Ujjain,Madhya Pradesh,Ujjain,Madhya Pradesh,exact,1.0000,exact_normalized
+Umaria,Madhya Pradesh,Umaria,Madhya Pradesh,exact,1.0000,exact_normalized
+Vidisha,Madhya Pradesh,Vidisha,Madhya Pradesh,exact,1.0000,exact_normalized
+Ahmednagar,Maharashtra,Ahmadnagar,Maharastra,fuzzy,0.9000,fuzzy_ratio
+Akola,Maharashtra,Akola,Maharastra,exact,1.0000,exact_normalized
+Amravati,Maharashtra,Amravati,Maharastra,exact,1.0000,exact_normalized
+Aurangabad,Maharashtra,Aurangabad,Maharastra,exact,1.0000,exact_normalized
+Bhandara,Maharashtra,Bhandara,Maharastra,exact,1.0000,exact_normalized
+Beed,Maharashtra,Bid,Maharastra,alias,0.9500,alias_known
+Buldhana,Maharashtra,Buldana,Maharastra,fuzzy,0.9333,fuzzy_ratio
+Chandrapur,Maharashtra,Chandrapur,Maharastra,exact,1.0000,exact_normalized
+Dhule,Maharashtra,Dhule,Maharastra,exact,1.0000,exact_normalized
+Gadchiroli,Maharashtra,Gadchiroli,Maharastra,exact,1.0000,exact_normalized
+Gondia,Maharashtra,Gondiya,Maharastra,fuzzy,0.9231,fuzzy_ratio
+Hingoli,Maharashtra,Hingoli,Maharastra,exact,1.0000,exact_normalized
+Jalgaon,Maharashtra,Jalgaon,Maharastra,exact,1.0000,exact_normalized
+Jalna,Maharashtra,Jalna,Maharastra,exact,1.0000,exact_normalized
+Kolhapur,Maharashtra,Kolhapur,Maharastra,exact,1.0000,exact_normalized
+Latur,Maharashtra,Latur,Maharastra,exact,1.0000,exact_normalized
+Mumbai,Maharashtra,Mumbai,Maharastra,exact,1.0000,exact_normalized
+Nagpur,Maharashtra,Nagpur,Maharastra,exact,1.0000,exact_normalized
+Nanded,Maharashtra,Nanded,Maharastra,exact,1.0000,exact_normalized
+Nandurbar,Maharashtra,Nandurbar,Maharastra,exact,1.0000,exact_normalized
+Nashik,Maharashtra,Nashik,Maharastra,exact,1.0000,exact_normalized
+Osmanabad,Maharashtra,Osmanabad,Maharastra,exact,1.0000,exact_normalized
+Palghar,Maharashtra,Palghar,Maharastra,exact,1.0000,exact_normalized
+Parbhani,Maharashtra,Parbhani,Maharastra,exact,1.0000,exact_normalized
+Pune,Maharashtra,Pune,Maharastra,exact,1.0000,exact_normalized
+Raigad,Maharashtra,Raigarh,Maharastra,alias,0.9500,alias_known
+Ratnagiri,Maharashtra,Ratnagiri,Maharastra,exact,1.0000,exact_normalized
+Sangli,Maharashtra,Sangli,Maharastra,exact,1.0000,exact_normalized
+Satara,Maharashtra,Satara,Maharastra,exact,1.0000,exact_normalized
+Sindhudurg,Maharashtra,Sindhudurg,Maharastra,exact,1.0000,exact_normalized
+Solapur,Maharashtra,Solapur,Maharastra,exact,1.0000,exact_normalized
+Thane,Maharashtra,Thane,Maharastra,exact,1.0000,exact_normalized
+Wardha,Maharashtra,Wardha,Maharastra,exact,1.0000,exact_normalized
+Washim,Maharashtra,Washim,Maharastra,exact,1.0000,exact_normalized
+Yavatmal,Maharashtra,Yavatmal,Maharastra,exact,1.0000,exact_normalized
+Bishnupur,Manipur,Bishnupur,Manipur,exact,1.0000,exact_normalized
+Chandel,Manipur,Chandel,Manipur,exact,1.0000,exact_normalized
+Churachandpur,Manipur,Churachandpur,Manipur,exact,1.0000,exact_normalized
+Imphal East,Manipur,Imphal East,Manipur,exact,1.0000,exact_normalized
+Imphal West,Manipur,Imphal West,Manipur,exact,1.0000,exact_normalized
+Senapati,Manipur,Senapati,Manipur,exact,1.0000,exact_normalized
+Tamenglong,Manipur,Tamenglong,Manipur,exact,1.0000,exact_normalized
+Thoubal,Manipur,Thoubal,Manipur,exact,1.0000,exact_normalized
+Ukhrul,Manipur,Ukhrul,Manipur,exact,1.0000,exact_normalized
+East Garo Hills,Meghalaya,East Garo Hills,Meghalaya,exact,1.0000,exact_normalized
+East Jaintia Hills,Meghalaya,East Jantia Hills,Meghalaya,fuzzy,0.9714,fuzzy_ratio
+East Khasi Hills,Meghalaya,East Khasi Hills,Meghalaya,exact,1.0000,exact_normalized
+North Garo Hills,Meghalaya,North Garo Hills,Meghalaya,exact,1.0000,exact_normalized
+Ribhoi,Meghalaya,Ribhoi,Meghalaya,exact,1.0000,exact_normalized
+South Garo Hills,Meghalaya,South Garo Hills,Meghalaya,exact,1.0000,exact_normalized
+South West Garo Hills,Meghalaya,South West Garo Hills,Meghalaya,exact,1.0000,exact_normalized
+South West Khasi Hills,Meghalaya,South West Khasi Hills,Meghalaya,exact,1.0000,exact_normalized
+West Garo Hills,Meghalaya,West Garo Hills,Meghalaya,exact,1.0000,exact_normalized
+West Jaintia Hills,Meghalaya,West Jaintia Hills,Meghalaya,exact,1.0000,exact_normalized
+West Khasi Hills,Meghalaya,West Khasi Hills,Meghalaya,exact,1.0000,exact_normalized
+Aizawl,Mizoram,Aizawl,Mizoram,exact,1.0000,exact_normalized
+Champhai,Mizoram,Champhai,Mizoram,exact,1.0000,exact_normalized
+Kolasib,Mizoram,Kolasib,Mizoram,exact,1.0000,exact_normalized
+Lawngtlai,Mizoram,Lawngtlai,Mizoram,exact,1.0000,exact_normalized
+Lunglei,Mizoram,Lunglei,Mizoram,exact,1.0000,exact_normalized
+Mamit,Mizoram,Mamit,Mizoram,exact,1.0000,exact_normalized
+Serchhip,Mizoram,Serchhip,Mizoram,exact,1.0000,exact_normalized
+Delhi,Delhi,Central,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,East,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,New Delhi,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,North,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,North East,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,North West,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,Shahdara,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,South,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,South East,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,South West,NCT of Delhi,alias,0.9500,manual_alias
+Delhi,Delhi,West,NCT of Delhi,alias,0.9500,manual_alias
+Dimapur,Nagaland,Dimapur,Nagaland,exact,1.0000,exact_normalized
+Kiphire,Nagaland,Kiphire,Nagaland,exact,1.0000,exact_normalized
+Kohima,Nagaland,Kohima,Nagaland,exact,1.0000,exact_normalized
+Longleng,Nagaland,Longleng,Nagaland,exact,1.0000,exact_normalized
+Mokokchung,Nagaland,Mokokchung,Nagaland,exact,1.0000,exact_normalized
+Mon,Nagaland,Mon,Nagaland,exact,1.0000,exact_normalized
+Peren,Nagaland,Peren,Nagaland,exact,1.0000,exact_normalized
+Phek,Nagaland,Phek,Nagaland,exact,1.0000,exact_normalized
+Tuensang,Nagaland,Tuensang,Nagaland,exact,1.0000,exact_normalized
+Wokha,Nagaland,Wokha,Nagaland,exact,1.0000,exact_normalized
+Zunheboto,Nagaland,Zunheboto,Nagaland,exact,1.0000,exact_normalized
+Angul,Odisha,Anugul,Odisha,fuzzy,0.9091,fuzzy_ratio
+Balangir,Odisha,Balangir,Odisha,exact,1.0000,exact_normalized
+Balasore,Odisha,Baleshwar,Odisha,alias,0.9500,alias_known
+Bargarh,Odisha,Bargarh,Odisha,exact,1.0000,exact_normalized
+Boudh,Odisha,Baudh,Odisha,alias,0.9500,alias_known
+Bhadrak,Odisha,Bhadrak,Odisha,exact,1.0000,exact_normalized
+Cuttack,Odisha,Cuttack,Odisha,exact,1.0000,exact_normalized
+Deogarh,Odisha,Debagarh,Odisha,alias,0.9500,alias_known
+Dhenkanal,Odisha,Dhenkanal,Odisha,exact,1.0000,exact_normalized
+Gajapati,Odisha,Gajapati,Odisha,exact,1.0000,exact_normalized
+Ganjam,Odisha,Ganjam,Odisha,exact,1.0000,exact_normalized
+Jagatsinghpur,Odisha,Jagatsinghapur,Odisha,fuzzy,0.9630,fuzzy_ratio
+Jajpur,Odisha,Jajapur,Odisha,fuzzy,0.9231,fuzzy_ratio
+Jharsuguda,Odisha,Jharsuguda,Odisha,exact,1.0000,exact_normalized
+Kalahandi,Odisha,Kalahandi,Odisha,exact,1.0000,exact_normalized
+Kandhamal,Odisha,Kandhamal,Odisha,exact,1.0000,exact_normalized
+Kendrapara,Odisha,Kendrapara,Odisha,exact,1.0000,exact_normalized
+Kendujhar,Odisha,Kendujhar,Odisha,exact,1.0000,exact_normalized
+Khordha,Odisha,Khordha,Odisha,exact,1.0000,exact_normalized
+Koraput,Odisha,Koraput,Odisha,exact,1.0000,exact_normalized
+Malkangiri,Odisha,Malkangiri,Odisha,exact,1.0000,exact_normalized
+Mayurbhanj,Odisha,Mayurbhanj,Odisha,exact,1.0000,exact_normalized
+Nabarangapur,Odisha,Nabarangapur,Odisha,exact,1.0000,exact_normalized
+Nayagarh,Odisha,Nayagarh,Odisha,exact,1.0000,exact_normalized
+Nuapada,Odisha,Nuapada,Odisha,exact,1.0000,exact_normalized
+Puri,Odisha,Puri,Odisha,exact,1.0000,exact_normalized
+Rayagada,Odisha,Rayagada,Odisha,exact,1.0000,exact_normalized
+Sambalpur,Odisha,Sambalpur,Odisha,exact,1.0000,exact_normalized
+Subarnapur,Odisha,Subarnapur,Odisha,exact,1.0000,exact_normalized
+Sundargarh,Odisha,Sundargarh,Odisha,exact,1.0000,exact_normalized
+Karaikal,Puducherry,Karaikal,Puducherry,exact,1.0000,exact_normalized
+Mahe,Puducherry,Mahe,Puducherry,exact,1.0000,exact_normalized
+Puducherry,Puducherry,Puducherry,Puducherry,exact,1.0000,exact_normalized
+Yanam,Puducherry,Yanam,Puducherry,exact,1.0000,exact_normalized
+Amritsar,Punjab,Amritsar,Punjab,exact,1.0000,exact_normalized
+Barnala,Punjab,Barnala,Punjab,exact,1.0000,exact_normalized
+Bathinda,Punjab,Bathinda,Punjab,exact,1.0000,exact_normalized
+Faridkot,Punjab,Faridkot,Punjab,exact,1.0000,exact_normalized
+Fatehgarh Sahib,Punjab,Fatehgarh Sahib,Punjab,exact,1.0000,exact_normalized
+Fazilka,Punjab,Fazilka,Punjab,exact,1.0000,exact_normalized
+Ferozepur,Punjab,Firozpur,Punjab,alias,0.9500,alias_known
+Gurdaspur,Punjab,Gurdaspur,Punjab,exact,1.0000,exact_normalized
+Hoshiarpur,Punjab,Hoshiarpur,Punjab,exact,1.0000,exact_normalized
+Jalandhar,Punjab,Jalandhar,Punjab,exact,1.0000,exact_normalized
+Kapurthala,Punjab,Kapurthala,Punjab,exact,1.0000,exact_normalized
+Ludhiana,Punjab,Ludhiana,Punjab,exact,1.0000,exact_normalized
+Mansa,Punjab,Mansa,Punjab,exact,1.0000,exact_normalized
+Moga,Punjab,Moga,Punjab,exact,1.0000,exact_normalized
+Sri Muktsar Sahib,Punjab,Muktsar,Punjab,alias,0.9500,alias_known
+Pathankot,Punjab,Pathankot,Punjab,exact,1.0000,exact_normalized
+Patiala,Punjab,Patiala,Punjab,exact,1.0000,exact_normalized
+Rupnagar,Punjab,Rupnagar,Punjab,exact,1.0000,exact_normalized
+S.A.S. Nagar,Punjab,Sahibzada Ajit Singh Nagar,Punjab,alias,0.9500,alias_known
+Sangrur,Punjab,Sangrur,Punjab,exact,1.0000,exact_normalized
+Shahid Bhagat Singh Nagar,Punjab,Shahid Bhagat Singh Nagar,Punjab,exact,1.0000,exact_normalized
+Tarn Taran,Punjab,Tarn Taran,Punjab,exact,1.0000,exact_normalized
+Ajmer,Rajasthan,Ajmer,Rajasthan,exact,1.0000,exact_normalized
+Alwar,Rajasthan,Alwar,Rajasthan,exact,1.0000,exact_normalized
+Banswara,Rajasthan,Banswara,Rajasthan,exact,1.0000,exact_normalized
+Baran,Rajasthan,Baran,Rajasthan,exact,1.0000,exact_normalized
+Barmer,Rajasthan,Barmer,Rajasthan,exact,1.0000,exact_normalized
+Bharatpur,Rajasthan,Bharatpur,Rajasthan,exact,1.0000,exact_normalized
+Bhilwara,Rajasthan,Bhilwara,Rajasthan,exact,1.0000,exact_normalized
+Bikaner,Rajasthan,Bikaner,Rajasthan,exact,1.0000,exact_normalized
+Bundi,Rajasthan,Bundi,Rajasthan,exact,1.0000,exact_normalized
+Chittorgarh,Rajasthan,Chittaurgarh,Rajasthan,fuzzy,0.8696,fuzzy_ratio
+Churu,Rajasthan,Churu,Rajasthan,exact,1.0000,exact_normalized
+Dausa,Rajasthan,Dausa,Rajasthan,exact,1.0000,exact_normalized
+Dholpur,Rajasthan,Dhaulpur,Rajasthan,alias,0.9500,alias_known
+Dungarpur,Rajasthan,Dungarpur,Rajasthan,exact,1.0000,exact_normalized
+Ganganagar,Rajasthan,Ganganagar,Rajasthan,exact,1.0000,exact_normalized
+Hanumangarh,Rajasthan,Hanumangarh,Rajasthan,exact,1.0000,exact_normalized
+Jaipur,Rajasthan,Jaipur,Rajasthan,exact,1.0000,exact_normalized
+Jaisalmer,Rajasthan,Jaisalmer,Rajasthan,exact,1.0000,exact_normalized
+Jalore,Rajasthan,Jalor,Rajasthan,fuzzy,0.9091,fuzzy_ratio
+Jhalawar,Rajasthan,Jhalawar,Rajasthan,exact,1.0000,exact_normalized
+Jhunjhunu,Rajasthan,Jhunjhunun,Rajasthan,fuzzy,0.9474,fuzzy_ratio
+Jodhpur,Rajasthan,Jodhpur,Rajasthan,exact,1.0000,exact_normalized
+Karauli,Rajasthan,Karauli,Rajasthan,exact,1.0000,exact_normalized
+Kota,Rajasthan,Kota,Rajasthan,exact,1.0000,exact_normalized
+Nagaur,Rajasthan,Nagaur,Rajasthan,exact,1.0000,exact_normalized
+Pali,Rajasthan,Pali,Rajasthan,exact,1.0000,exact_normalized
+Pratapgarh,Rajasthan,Pratapgarh,Rajasthan,exact,1.0000,exact_normalized
+Rajsamand,Rajasthan,Rajsamand,Rajasthan,exact,1.0000,exact_normalized
+Sawai Madhopur,Rajasthan,Sawai Madhopur,Rajasthan,exact,1.0000,exact_normalized
+Sikar,Rajasthan,Sikar,Rajasthan,exact,1.0000,exact_normalized
+Sirohi,Rajasthan,Sirohi,Rajasthan,exact,1.0000,exact_normalized
+Tonk,Rajasthan,Tonk,Rajasthan,exact,1.0000,exact_normalized
+Udaipur,Rajasthan,Udaipur,Rajasthan,exact,1.0000,exact_normalized
+East Sikkim,Sikkim,East District,Sikkim,alias,0.9500,alias_known
+North Sikkim,Sikkim,North District,Sikkim,alias,0.9500,alias_known
+South Sikkim,Sikkim,South District,Sikkim,alias,0.9500,alias_known
+West Sikkim,Sikkim,West District,Sikkim,alias,0.9500,alias_known
+Ariyalur,Tamil Nadu,Ariyalur,Tamil Nadu,exact,1.0000,exact_normalized
+Chennai,Tamil Nadu,Chennai,Tamil Nadu,exact,1.0000,exact_normalized
+Coimbatore,Tamil Nadu,Coimbatore,Tamil Nadu,exact,1.0000,exact_normalized
+Cuddalore,Tamil Nadu,Cuddalore,Tamil Nadu,exact,1.0000,exact_normalized
+Dharmapuri,Tamil Nadu,Dharmapuri,Tamil Nadu,exact,1.0000,exact_normalized
+Dindigul,Tamil Nadu,Dindigul,Tamil Nadu,exact,1.0000,exact_normalized
+Erode,Tamil Nadu,Erode,Tamil Nadu,exact,1.0000,exact_normalized
+Kancheepuram,Tamil Nadu,Kancheepuram,Tamil Nadu,exact,1.0000,exact_normalized
+Kanyakumari,Tamil Nadu,Kanniyakumari,Tamil Nadu,fuzzy,0.9167,fuzzy_ratio
+Karur,Tamil Nadu,Karur,Tamil Nadu,exact,1.0000,exact_normalized
+Krishnagiri,Tamil Nadu,Krishnagiri,Tamil Nadu,exact,1.0000,exact_normalized
+Madurai,Tamil Nadu,Madurai,Tamil Nadu,exact,1.0000,exact_normalized
+Nagapattinam,Tamil Nadu,Nagapattinam,Tamil Nadu,exact,1.0000,exact_normalized
+Namakkal,Tamil Nadu,Namakkal,Tamil Nadu,exact,1.0000,exact_normalized
+Perambalur,Tamil Nadu,Perambalur,Tamil Nadu,exact,1.0000,exact_normalized
+Pudukkottai,Tamil Nadu,Pudukkottai,Tamil Nadu,exact,1.0000,exact_normalized
+Ramanathapuram,Tamil Nadu,Ramanathapuram,Tamil Nadu,exact,1.0000,exact_normalized
+Salem,Tamil Nadu,Salem,Tamil Nadu,exact,1.0000,exact_normalized
+Sivaganga,Tamil Nadu,Sivaganga,Tamil Nadu,exact,1.0000,exact_normalized
+Thanjavur,Tamil Nadu,Thanjavur,Tamil Nadu,exact,1.0000,exact_normalized
+Nilgiris,Tamil Nadu,The Nilgiris,Tamil Nadu,alias,0.9500,alias_known
+Theni,Tamil Nadu,Theni,Tamil Nadu,exact,1.0000,exact_normalized
+Thiruvallur,Tamil Nadu,Thiruvallur,Tamil Nadu,exact,1.0000,exact_normalized
+Thiruvarur,Tamil Nadu,Thiruvarur,Tamil Nadu,exact,1.0000,exact_normalized
+Thoothukkudi,Tamil Nadu,Thoothukkudi,Tamil Nadu,exact,1.0000,exact_normalized
+Tiruchirappalli,Tamil Nadu,Tiruchirappalli,Tamil Nadu,exact,1.0000,exact_normalized
+Tirunelveli,Tamil Nadu,Tirunelveli,Tamil Nadu,exact,1.0000,exact_normalized
+Tiruppur,Tamil Nadu,Tiruppur,Tamil Nadu,exact,1.0000,exact_normalized
+Tiruvannamalai,Tamil Nadu,Tiruvannamalai,Tamil Nadu,exact,1.0000,exact_normalized
+Vellore,Tamil Nadu,Vellore,Tamil Nadu,exact,1.0000,exact_normalized
+Viluppuram,Tamil Nadu,Viluppuram,Tamil Nadu,exact,1.0000,exact_normalized
+Virudhunagar,Tamil Nadu,Virudhunagar,Tamil Nadu,exact,1.0000,exact_normalized
+Adilabad,Telangana,Adilabad,Telangana,exact,1.0000,exact_normalized
+Bhadradri Kothagudem,Telangana,Bhadradri Kothagudem,Telangana,exact,1.0000,exact_normalized
+Hyderabad,Telangana,Hyderabad,Telangana,exact,1.0000,exact_normalized
+Jagtial,Telangana,Jagitial,Telangana,fuzzy,0.9333,fuzzy_ratio
+Jangaon,Telangana,Jangoan,Telangana,fuzzy,0.8571,fuzzy_ratio
+Jayashankar Bhupalapally,Telangana,Jayashankar Bhupalapally,Telangana,exact,1.0000,exact_normalized
+Jogulamba Gadwal,Telangana,Jogulamba Gadwal,Telangana,exact,1.0000,exact_normalized
+Kamareddy,Telangana,Kamareddy,Telangana,exact,1.0000,exact_normalized
+Karimnagar,Telangana,Karimnagar,Telangana,exact,1.0000,exact_normalized
+Khammam,Telangana,Khammam,Telangana,exact,1.0000,exact_normalized
+Komaram Bheem,Telangana,Komaram Bheem Asifabad,Telangana,alias,0.9500,alias_known
+Mahabubabad,Telangana,Mahabubabad,Telangana,exact,1.0000,exact_normalized
+Mahabubnagar,Telangana,Mahabubnagar,Telangana,exact,1.0000,exact_normalized
+Mancherial,Telangana,Mancherial,Telangana,exact,1.0000,exact_normalized
+Medak,Telangana,Medak,Telangana,exact,1.0000,exact_normalized
+Medchal Malkajgiri,Telangana,Medchal-Malkajgiri,Telangana,exact,1.0000,exact_normalized
+Nagarkurnool,Telangana,Nagarkurnool,Telangana,exact,1.0000,exact_normalized
+Nalgonda,Telangana,Nalgonda,Telangana,exact,1.0000,exact_normalized
+Nirmal,Telangana,Nirmal,Telangana,exact,1.0000,exact_normalized
+Nizamabad,Telangana,Nizamabad,Telangana,exact,1.0000,exact_normalized
+Peddapalli,Telangana,Peddapalli,Telangana,exact,1.0000,exact_normalized
+Rajanna Sircilla,Telangana,Rajanna Sircilla,Telangana,exact,1.0000,exact_normalized
+Ranga Reddy,Telangana,Ranga Reddy,Telangana,exact,1.0000,exact_normalized
+Sangareddy,Telangana,Sangareddy,Telangana,exact,1.0000,exact_normalized
+Siddipet,Telangana,Siddipet,Telangana,exact,1.0000,exact_normalized
+Suryapet,Telangana,Suryapet,Telangana,exact,1.0000,exact_normalized
+Vikarabad,Telangana,Vikarabad,Telangana,exact,1.0000,exact_normalized
+Wanaparthy,Telangana,Wanaparthy,Telangana,exact,1.0000,exact_normalized
+Warangal Rural,Telangana,Warangal Rural,Telangana,exact,1.0000,exact_normalized
+Warangal Urban,Telangana,Warangal Urban,Telangana,exact,1.0000,exact_normalized
+Yadadri Bhuvanagiri,Telangana,Yadadri Bhuvanagiri,Telangana,exact,1.0000,exact_normalized
+Dhalai,Tripura,Dhalai,Tripura,exact,1.0000,exact_normalized
+Gomati,Tripura,Gomati,Tripura,exact,1.0000,exact_normalized
+Khowai,Tripura,Khowai,Tripura,exact,1.0000,exact_normalized
+North Tripura,Tripura,North Tripura,Tripura,exact,1.0000,exact_normalized
+Sipahijala,Tripura,Sepahijala,Tripura,fuzzy,0.9000,fuzzy_ratio
+South Tripura,Tripura,South Tripura,Tripura,exact,1.0000,exact_normalized
+Unokoti,Tripura,Unakoti,Tripura,fuzzy,0.8571,fuzzy_ratio
+West Tripura,Tripura,West Tripura,Tripura,exact,1.0000,exact_normalized
+Agra,Uttar Pradesh,Agra,Uttar Pradesh,exact,1.0000,exact_normalized
+Aligarh,Uttar Pradesh,Aligarh,Uttar Pradesh,exact,1.0000,exact_normalized
+Prayagraj,Uttar Pradesh,Allahabad,Uttar Pradesh,alias,0.9500,alias_known
+Ambedkar Nagar,Uttar Pradesh,Ambedkar Nagar,Uttar Pradesh,exact,1.0000,exact_normalized
+Amethi,Uttar Pradesh,Amethi,Uttar Pradesh,exact,1.0000,exact_normalized
+Auraiya,Uttar Pradesh,Auraiya,Uttar Pradesh,exact,1.0000,exact_normalized
+Azamgarh,Uttar Pradesh,Azamgarh,Uttar Pradesh,exact,1.0000,exact_normalized
+Baghpat,Uttar Pradesh,Baghpat,Uttar Pradesh,exact,1.0000,exact_normalized
+Bahraich,Uttar Pradesh,Bahraich,Uttar Pradesh,exact,1.0000,exact_normalized
+Ballia,Uttar Pradesh,Ballia,Uttar Pradesh,exact,1.0000,exact_normalized
+Balrampur,Uttar Pradesh,Balrampur,Uttar Pradesh,exact,1.0000,exact_normalized
+Banda,Uttar Pradesh,Banda,Uttar Pradesh,exact,1.0000,exact_normalized
+Barabanki,Uttar Pradesh,Bara Banki,Uttar Pradesh,fuzzy,0.9474,fuzzy_ratio
+Bareilly,Uttar Pradesh,Bareilly,Uttar Pradesh,exact,1.0000,exact_normalized
+Basti,Uttar Pradesh,Basti,Uttar Pradesh,exact,1.0000,exact_normalized
+Bijnor,Uttar Pradesh,Bijnor,Uttar Pradesh,exact,1.0000,exact_normalized
+Budaun,Uttar Pradesh,Budaun,Uttar Pradesh,exact,1.0000,exact_normalized
+Bulandshahr,Uttar Pradesh,Bulandshahr,Uttar Pradesh,exact,1.0000,exact_normalized
+Chandauli,Uttar Pradesh,Chandauli,Uttar Pradesh,exact,1.0000,exact_normalized
+Chitrakoot,Uttar Pradesh,Chitrakoot,Uttar Pradesh,exact,1.0000,exact_normalized
+Deoria,Uttar Pradesh,Deoria,Uttar Pradesh,exact,1.0000,exact_normalized
+Etah,Uttar Pradesh,Etah,Uttar Pradesh,exact,1.0000,exact_normalized
+Etawah,Uttar Pradesh,Etawah,Uttar Pradesh,exact,1.0000,exact_normalized
+Ayodhya,Uttar Pradesh,Faizabad,Uttar Pradesh,alias,0.9500,alias_known
+Farrukhabad,Uttar Pradesh,Farrukhabad,Uttar Pradesh,exact,1.0000,exact_normalized
+Fatehpur,Uttar Pradesh,Fatehpur,Uttar Pradesh,exact,1.0000,exact_normalized
+Firozabad,Uttar Pradesh,Firozabad,Uttar Pradesh,exact,1.0000,exact_normalized
+Gautam Buddha Nagar,Uttar Pradesh,Gautam Buddha Nagar,Uttar Pradesh,exact,1.0000,exact_normalized
+Ghaziabad,Uttar Pradesh,Ghaziabad,Uttar Pradesh,exact,1.0000,exact_normalized
+Ghazipur,Uttar Pradesh,Ghazipur,Uttar Pradesh,exact,1.0000,exact_normalized
+Gonda,Uttar Pradesh,Gonda,Uttar Pradesh,exact,1.0000,exact_normalized
+Gorakhpur,Uttar Pradesh,Gorakhpur,Uttar Pradesh,exact,1.0000,exact_normalized
+Hamirpur,Uttar Pradesh,Hamirpur,Uttar Pradesh,exact,1.0000,exact_normalized
+Hapur,Uttar Pradesh,Hapur,Uttar Pradesh,exact,1.0000,exact_normalized
+Hardoi,Uttar Pradesh,Hardoi,Uttar Pradesh,exact,1.0000,exact_normalized
+Jalaun,Uttar Pradesh,Jalaun,Uttar Pradesh,exact,1.0000,exact_normalized
+Jaunpur,Uttar Pradesh,Jaunpur,Uttar Pradesh,exact,1.0000,exact_normalized
+Jhansi,Uttar Pradesh,Jhansi,Uttar Pradesh,exact,1.0000,exact_normalized
+Amroha,Uttar Pradesh,Jyotiba Phule Nagar,Uttar Pradesh,alias,0.9500,alias_known
+Kannauj,Uttar Pradesh,Kannauj,Uttar Pradesh,exact,1.0000,exact_normalized
+Kanpur Dehat,Uttar Pradesh,Kanpur Dehat,Uttar Pradesh,exact,1.0000,exact_normalized
+Kanpur Nagar,Uttar Pradesh,Kanpur Nagar,Uttar Pradesh,exact,1.0000,exact_normalized
+Kasganj,Uttar Pradesh,Kanshiram Nagar,Uttar Pradesh,alias,0.9500,alias_known
+Kaushambi,Uttar Pradesh,Kaushambi,Uttar Pradesh,exact,1.0000,exact_normalized
+Lakhimpur Kheri,Uttar Pradesh,Kheri,Uttar Pradesh,alias,0.9500,alias_known
+Kushinagar,Uttar Pradesh,Kushinagar,Uttar Pradesh,exact,1.0000,exact_normalized
+Lalitpur,Uttar Pradesh,Lalitpur,Uttar Pradesh,exact,1.0000,exact_normalized
+Lucknow,Uttar Pradesh,Lucknow,Uttar Pradesh,exact,1.0000,exact_normalized
+Hathras,Uttar Pradesh,Mahamaya Nagar,Uttar Pradesh,alias,0.9500,alias_known
+Mahoba,Uttar Pradesh,Mahoba,Uttar Pradesh,exact,1.0000,exact_normalized
+Maharajganj,Uttar Pradesh,Mahrajganj,Uttar Pradesh,fuzzy,0.9524,fuzzy_ratio
+Mainpuri,Uttar Pradesh,Mainpuri,Uttar Pradesh,exact,1.0000,exact_normalized
+Mathura,Uttar Pradesh,Mathura,Uttar Pradesh,exact,1.0000,exact_normalized
+Mau,Uttar Pradesh,Mau,Uttar Pradesh,exact,1.0000,exact_normalized
+Meerut,Uttar Pradesh,Meerut,Uttar Pradesh,exact,1.0000,exact_normalized
+Mirzapur,Uttar Pradesh,Mirzapur,Uttar Pradesh,exact,1.0000,exact_normalized
+Moradabad,Uttar Pradesh,Moradabad,Uttar Pradesh,exact,1.0000,exact_normalized
+Muzaffarnagar,Uttar Pradesh,Muzaffarnagar,Uttar Pradesh,exact,1.0000,exact_normalized
+Pilibhit,Uttar Pradesh,Pilibhit,Uttar Pradesh,exact,1.0000,exact_normalized
+Pratapgarh,Uttar Pradesh,Pratapgarh,Uttar Pradesh,exact,1.0000,exact_normalized
+Rae Bareli,Uttar Pradesh,Rae Bareli,Uttar Pradesh,exact,1.0000,exact_normalized
+Rampur,Uttar Pradesh,Rampur,Uttar Pradesh,exact,1.0000,exact_normalized
+Saharanpur,Uttar Pradesh,Saharanpur,Uttar Pradesh,exact,1.0000,exact_normalized
+Sambhal,Uttar Pradesh,Sambhal,Uttar Pradesh,exact,1.0000,exact_normalized
+Sant Kabir Nagar,Uttar Pradesh,Sant Kabir Nagar,Uttar Pradesh,exact,1.0000,exact_normalized
+Bhadohi,Uttar Pradesh,Sant Ravidas Nagar (Bhadohi),Uttar Pradesh,alias,0.9500,alias_known
+Shahjahanpur,Uttar Pradesh,Shahjahanpur,Uttar Pradesh,exact,1.0000,exact_normalized
+Shamli,Uttar Pradesh,Shamli,Uttar Pradesh,exact,1.0000,exact_normalized
+Shrawasti,Uttar Pradesh,Shrawasti,Uttar Pradesh,exact,1.0000,exact_normalized
+Siddharthnagar,Uttar Pradesh,Siddharthnagar,Uttar Pradesh,exact,1.0000,exact_normalized
+Sitapur,Uttar Pradesh,Sitapur,Uttar Pradesh,exact,1.0000,exact_normalized
+Sonbhadra,Uttar Pradesh,Sonbhadra,Uttar Pradesh,exact,1.0000,exact_normalized
+Sultanpur,Uttar Pradesh,Sultanpur,Uttar Pradesh,exact,1.0000,exact_normalized
+Unnao,Uttar Pradesh,Unnao,Uttar Pradesh,exact,1.0000,exact_normalized
+Varanasi,Uttar Pradesh,Varanasi,Uttar Pradesh,exact,1.0000,exact_normalized
+Almora,Uttarakhand,Almora,Uttarakhand,exact,1.0000,exact_normalized
+Bageshwar,Uttarakhand,Bageshwar,Uttarakhand,exact,1.0000,exact_normalized
+Chamoli,Uttarakhand,Chamoli,Uttarakhand,exact,1.0000,exact_normalized
+Champawat,Uttarakhand,Champawat,Uttarakhand,exact,1.0000,exact_normalized
+Dehradun,Uttarakhand,Dehradun,Uttarakhand,exact,1.0000,exact_normalized
+Pauri Garhwal,Uttarakhand,Garhwal,Uttarakhand,alias,0.9500,alias_known
+Haridwar,Uttarakhand,Hardwar,Uttarakhand,fuzzy,0.9333,fuzzy_ratio
+Nainital,Uttarakhand,Nainital,Uttarakhand,exact,1.0000,exact_normalized
+Pithoragarh,Uttarakhand,Pithoragarh,Uttarakhand,exact,1.0000,exact_normalized
+Rudraprayag,Uttarakhand,Rudraprayag,Uttarakhand,exact,1.0000,exact_normalized
+Tehri Garhwal,Uttarakhand,Tehri Garhwal,Uttarakhand,exact,1.0000,exact_normalized
+Udham Singh Nagar,Uttarakhand,Udham Singh Nagar,Uttarakhand,exact,1.0000,exact_normalized
+Uttarkashi,Uttarakhand,Uttarkashi,Uttarakhand,exact,1.0000,exact_normalized
+Bankura,West Bengal,Bankura,West Bengal,exact,1.0000,exact_normalized
+Birbhum,West Bengal,Birbhum,West Bengal,exact,1.0000,exact_normalized
+Dakshin Dinajpur,West Bengal,Dakshin Dinajpur,West Bengal,exact,1.0000,exact_normalized
+Darjeeling,West Bengal,Darjiling,West Bengal,fuzzy,0.8421,fuzzy_ratio
+Howrah,West Bengal,Haora,West Bengal,alias,0.9500,alias_known
+Hooghly,West Bengal,Hugli,West Bengal,alias,0.9500,alias_known
+Jalpaiguri,West Bengal,Jalpaiguri,West Bengal,exact,1.0000,exact_normalized
+Cooch Behar,West Bengal,Koch Bihar,West Bengal,alias,0.9500,alias_known
+Kolkata,West Bengal,Kolkata,West Bengal,exact,1.0000,exact_normalized
+Malda,West Bengal,Maldah,West Bengal,fuzzy,0.9091,fuzzy_ratio
+Murshidabad,West Bengal,Murshidabad,West Bengal,exact,1.0000,exact_normalized
+Nadia,West Bengal,Nadia,West Bengal,exact,1.0000,exact_normalized
+North 24 Parganas,West Bengal,North Twenty Four Pargana,West Bengal,alias,0.9500,alias_known
+Paschim Bardhaman,West Bengal,Paschim Barddhaman,West Bengal,fuzzy,0.9714,fuzzy_ratio
+Paschim Medinipur,West Bengal,Paschim Medinipur,West Bengal,exact,1.0000,exact_normalized
+Purba Medinipur,West Bengal,Purba Medinipur,West Bengal,exact,1.0000,exact_normalized
+Purulia,West Bengal,Puruliya,West Bengal,fuzzy,0.9333,fuzzy_ratio
+South 24 Parganas,West Bengal,South Twenty Four Pargana,West Bengal,alias,0.9500,alias_known
+Uttar Dinajpur,West Bengal,Uttar Dinajpur,West Bengal,exact,1.0000,exact_normalized
+Tirupati,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Annamayya,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Sri Sathya Sai,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Bapatla,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Parvathipuram Manyam,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Eluru,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Alluri Sitharama Raju,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Konaseema,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Kakinada,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Anakapalli,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Nandyal,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+NTR,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Palnadu,Andhra Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Lower Siang,Arunachal Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Shi Yomi,Arunachal Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Pakke Kessang,Arunachal Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Lepa Rada,Arunachal Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Kamle,Arunachal Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Muzaffarabad,Jammu and Kashmir,,,unmatched_extra,0.0000,no_nfhs_key
+Mirpur,Jammu and Kashmir,,,unmatched_extra,0.0000,no_nfhs_key
+Niwari,Madhya Pradesh,,,unmatched_extra,0.0000,no_nfhs_key
+Kamjong,Manipur,,,unmatched_extra,0.0000,no_nfhs_key
+Kakching,Manipur,,,unmatched_extra,0.0000,no_nfhs_key
+Jiribam,Manipur,,,unmatched_extra,0.0000,no_nfhs_key
+Kangpokpi,Manipur,,,unmatched_extra,0.0000,no_nfhs_key
+Tengnoupal,Manipur,,,unmatched_extra,0.0000,no_nfhs_key
+Noney,Manipur,,,unmatched_extra,0.0000,no_nfhs_key
+Pherzawl,Manipur,,,unmatched_extra,0.0000,no_nfhs_key
+Saiha,Mizoram,,,unmatched_extra,0.0000,no_nfhs_key
+Khawzawl,Mizoram,,,unmatched_extra,0.0000,no_nfhs_key
+Hnahthial,Mizoram,,,unmatched_extra,0.0000,no_nfhs_key
+Kallakurichi,Tamil Nadu,,,unmatched_extra,0.0000,no_nfhs_key
+Tenkasi,Tamil Nadu,,,unmatched_extra,0.0000,no_nfhs_key
+Ranipet,Tamil Nadu,,,unmatched_extra,0.0000,no_nfhs_key
+Tirupathur,Tamil Nadu,,,unmatched_extra,0.0000,no_nfhs_key
+Chengalpattu,Tamil Nadu,,,unmatched_extra,0.0000,no_nfhs_key
+Mulugu,Telangana,,,unmatched_extra,0.0000,no_nfhs_key
+Narayanpet,Telangana,,,unmatched_extra,0.0000,no_nfhs_key
+Jhargram,West Bengal,,,unmatched_extra,0.0000,no_nfhs_key
+Purba Bardhaman,West Bengal,,,unmatched_extra,0.0000,no_nfhs_key
+Alipurduar,West Bengal,,,unmatched_extra,0.0000,no_nfhs_key
+Kalimpong,West Bengal,,,unmatched_extra,0.0000,no_nfhs_key
+Mumbai,Maharashtra,Mumbai Suburban,Maharastra,one_to_many,1.0000,metro_shared_polygon
