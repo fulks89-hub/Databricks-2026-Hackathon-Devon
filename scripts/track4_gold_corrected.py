@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Native Lakebase Postgres rebuild of Peter's corrected gold_district_supply_need.
 
 Mirrors workspace.virtue_foundation_clean_v4.gold_district_supply_need (already deployed in

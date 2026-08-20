@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Run SQL against the Asclepius Lakebase Postgres via OAuth (pure-python pg8000).
 
 Usage:
-  PGHOST=... PGUSER=... PGTOKEN=... PGSQL="SELECT 1; SELECT 2" python scripts/lakebase_admin.py
+  PGHOST=... PGUSER=... PGTOKEN=... PGSQL="SELECT 1; SELECT 2" python3 scripts/lakebase_admin.py
 
 Token: databricks postgres generate-database-credential \
   projects/asclepius/branches/production/endpoints/primary -p team -o json  -> .token

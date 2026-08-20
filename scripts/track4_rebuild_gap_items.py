@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Rebuild readiness.readiness_gap_items from readiness.data_readiness (Lakebase).
 
 Demo-quality refinement: column-shifted / invalid-id records (data_quality_flag OR
