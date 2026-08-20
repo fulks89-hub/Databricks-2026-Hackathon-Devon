@@ -24,14 +24,14 @@ committed `data/facilities_clean.csv.gz`; they are NOT user PII.
 -------------------------------------------------------------------------------
 HOW TO RUN (you have Lakebase access; run it in YOUR terminal):
 
-  pip install pg8000                      # one-time
+  python3 -m pip install pg8000           # one-time, preferably in a virtual environment
   databricks auth login -p team           # if not already logged in
 
   # one command -- it mints a short-lived read token for you automatically:
-  python scripts/export_databricks_data.py
+  python3 scripts/export_databricks_data.py
 
   # dry run (list tables + row counts, export nothing):
-  python scripts/export_databricks_data.py --list
+  python3 scripts/export_databricks_data.py --list
 
 Then review data/databricks_export/ and:
   git add data/databricks_export

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Track 4 (Data Readiness Desk) — native Lakebase Postgres build.
 
 WHY native: on 2026-06-16 the Free-Edition daily limit was hit for BOTH the SQL
@@ -16,7 +16,7 @@ Run (main thread; token expires ~1h):
   PGHOST=ep-blue-bread-d88j2kbh.database.us-east-2.cloud.databricks.com \
   PGUSER=dakotabowles72956@gmail.com \
   PGTOKEN=$(databricks postgres generate-database-credential <EP> -p team -o json | jq -r .token) \
-  python scripts/track4_lakebase_build.py
+  python3 scripts/track4_lakebase_build.py
 """
 import csv, os, ssl, sys
 import pg8000.native
